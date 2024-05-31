@@ -520,14 +520,14 @@ let mainSketch = function(p) {
         }
     }
 
-    function scrollToPercentage(percentage) {
-      const totalHeight = document.documentElement.scrollHeight - document.documentElement.clientHeight;
-      const scrollPosition = totalHeight * (percentage / 100);
-      window.scrollTo({ top: scrollPosition, behavior: 'instant' });
-    }
+    // function scrollToPercentage(percentage) {
+    //   const totalHeight = document.documentElement.scrollHeight - document.documentElement.clientHeight;
+    //   const scrollPosition = totalHeight * (percentage / 100);
+    //   window.scrollTo({ top: scrollPosition, behavior: 'instant' });
+    // }
     
-    // Example usage: scroll to 50% of the page height
-    scrollToPercentage(50);
+    // // Example usage: scroll to 50% of the page height
+    // scrollToPercentage(50);
     
 
   }
