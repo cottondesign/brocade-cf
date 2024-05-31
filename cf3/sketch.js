@@ -327,11 +327,11 @@ let mainSketch = function(p) {
     p.frameRate(60);
     radius = p.width/3
     cursor = p.loadImage("cursor.png")
-    vertexControlsButton = p.createButton('show/hide vertices');
-    vertexControlsButton.parent('buttons-container');
-    vertexControlsButton.mousePressed(function() {
-      vertexControls = !vertexControls;
-    });
+    // vertexControlsButton = p.createButton('show/hide vertices');
+    // vertexControlsButton.parent('buttons-container');
+    // vertexControlsButton.mousePressed(function() {
+    //   vertexControls = !vertexControls;
+    // });
     // document.getElementById("sides").innerHTML += numSides
     let randCulprit = p.random(culprit)
     for(let i=0;i<randCulprit.length;i++) {
@@ -461,8 +461,8 @@ let mainSketch = function(p) {
     }
 
     // random rotation
-    let angle = 0;
-    // let angle = p.random(360);
+    // let angle = 0;
+    let angle = p.random(360);
     let radians = angle * (Math.PI / 180);
 
     for (let i = 0; i < easyPointsHistory.length-1; i++) { //length-1 because rotation was being applied twice to last item for some reason
