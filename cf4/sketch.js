@@ -42,9 +42,10 @@ let bgColor = "#171C31"
 let numSides = Math.floor(Math.random()*2)+7
 // let motionSpeed = .1
 let radius
-let vertexControls = false
+let vertexControls = true
 let strokeColor = [255]
 let moveList = []
+let colorthis = []
 
 let targetProgress = 0
 let progress = 0
@@ -54,7 +55,7 @@ let nextInterval, passedIntervals, passedIntEZ, remainingIntervals, interval, sc
 let mode = "full"
 let numTangles
 let randPts = []
-let originalLocations = []; // To store the original locations (for visual debugging)
+let originalLocations = []; // To store the original locations
 
 
 //for test #2
@@ -207,13 +208,13 @@ let culprit = [
       {segment: [58.3958,56.5001,47.2688,44.5697,55,43.0001],
         zIndex: 8},
       {segment: [62.7312,41.4305,66.5015,49.7621,67,55.0001],
-        zIndex: 0},
+        zIndex: 1},
       {segment: [68.5,70.7621,97,88.5,97,43.0001],
         zIndex: 10},
       {segment: [97,-4.5,48,-10.5,78.5,27.5],
         zIndex: 9},
       {segment: [85.2004,35.848,70,45,63,26.4277],
-        zIndex: 1},
+        zIndex: 0},
       {segment: [59.3233,16.6726,68.896,9.29308,76.5,11.0001],
         zIndex: 6},
       {segment: [101,16.5002,84.8897,85.0002,65.5,85.0002],
@@ -315,6 +316,26 @@ let mainSketch = function(p) {
       colors.push([p.random(255),p.random(255),p.random(255)])
     }
 
+    for(let i=0;i<20;i++) {
+      colorthis.push([p.random(50,255),p.random(50,255),p.random(50,255)])
+    }
+
+    function randRelChg(xRand, yRand, indices, low, hi, rel) {
+      let change
+      if (rel == "yDir") {
+        change = p.map(yRand, indices.yBoundLow, indices.yBoundHi, low, hi)
+      } else if (rel == "yInv") {
+        change = p.map(yRand, indices.yBoundHi, indices.yBoundLow, low, hi)
+      } else if (rel == "xDir") {
+        change = p.map(xRand, indices.xBoundLow, indices.xBoundHi, low, hi)
+      } else if (rel == "xInv") {
+        change = p.map(xRand, indices.xBoundHi, indices.xBoundLow, low, hi)
+      } else if (!rel) {
+        change = p.random(low, hi)
+      }
+      return change
+    }
+
 
 
     canvas = p.createCanvas(800, 800)
@@ -322,16 +343,17 @@ let mainSketch = function(p) {
     canvas.style('position', 'absolute');
     canvas.parent('sketch-holder');
     center = {x:p.width/2, y:p.height/2}
-    p.width *= .7
+    p.width *= .6
+    p.height *=.85
     p.noFill();
     p.frameRate(60);
     radius = p.width/3
     cursor = p.loadImage("cursor.png")
-    // vertexControlsButton = p.createButton('show/hide vertices');
-    // vertexControlsButton.parent('buttons-container');
-    // vertexControlsButton.mousePressed(function() {
-    //   vertexControls = !vertexControls;
-    // });
+    vertexControlsButton = p.createButton('show/hide debug info');
+    vertexControlsButton.parent('buttons-container');
+    vertexControlsButton.mousePressed(function() {
+      vertexControls = !vertexControls;
+    });
     // document.getElementById("sides").innerHTML += numSides
     let randCulprit = p.random(culprit)
     for(let i=0;i<randCulprit.length;i++) {
@@ -375,41 +397,105 @@ let mainSketch = function(p) {
 
     numTangles = Math.floor(randCulprit.length/2)-1
 
+    for (let i = 0; i < easyPointsHistory.length; i++) {
+      originalLocations.push([]);
+      for (let j = 0; j < easyPointsHistory[i].length; j++) {
+          originalLocations[i].push({
+              x: easyPointsHistory[i][j].x,
+              y: easyPointsHistory[i][j].y
+          });
+        }
+    }
+
 
     // hard-coded fixes
     easyPointsHistory[4][1].targetangle += 360
+    // easyPointsHistory[10][5].targetx += p.height*.1
+    // easyPointsHistory[9][4].targetx += p.height*.1
 
 
     // random positioning of select vertices
     randPts = [
-      {stage:11,point:11, xBoundLow: -p.height*.01, xBoundHi: p.height*.06, yBoundLow: -p.height*.06, yBoundHi: p.height*.03},
-      {stage:11,point:10, xBoundLow: -p.height*.06, xBoundHi: p.height*.06, yBoundLow: -p.height*.06, yBoundHi: p.height*.06},
-      {stage:11,point:9, xBoundLow: -p.height*.06, xBoundHi: p.height*.06, yBoundLow: -p.height*.06, yBoundHi: p.height*.06},
-      {stage:11,point:7, xBoundLow: -p.height*.06, xBoundHi: p.height*0.01, yBoundLow: -p.height*.1, yBoundHi: p.height*0.01},
-      // {stage:11,point:6, xBoundLow: -p.height*.06, xBoundHi: p.height*.03, yBoundLow: -p.height*.06, yBoundHi: p.height*.03},
-      // {stage:11,point:5, xBoundLow: -p.height*.20, xBoundHi: p.height*.20, yBoundLow: -p.height*.02, yBoundHi: p.height*.20},
-      // {stage:11,point:2, xBoundLow: -p.height*.1, xBoundHi: p.height*0.01, yBoundLow: -p.height*.1, yBoundHi: p.height*0.01, onlyOne: true,
-      //   bez1Hi: p.height*.2, bez1Low: p.height*.01, bez2Hi: p.height*.2, bez2Low: p.height*.01
-      // },
-      {stage:11, point:0, xBoundLow: -p.height*.15, xBoundHi: p.height*.06, yBoundLow: -p.height*.06, yBoundHi: p.height*.06,
-        bez2Hi: p.height*.1, bez2Low: -p.height*.1
+      {stage:11,point:12, xBoundLow: -p.height*.2, xBoundHi: p.height*.02, yBoundLow: -p.height*.06, yBoundHi: p.height*.06,
+        partnerPoint: 8,
+        bez2Hi: p.height*.2, bez2Low: -p.height*.01, bez2Rel: "xInv" 
       },
-      // {stage:9, point:6, xBoundLow: -p.height*.06, xBoundHi: p.height*0.06, yBoundLow: -p.height*.06, yBoundHi: p.height*.06},
-      {stage:7, point:1, xBoundLow: -p.height*.06, xBoundHi: p.height*.06, yBoundLow: -p.height*.06, yBoundHi: p.height*.06},
-      // {stage:9, point:4, xBoundLow: -p.height*.03, xBoundHi: p.height*.03, yBoundLow: -p.height*.2, yBoundHi: p.height*.1},
+      {stage:11,point:11, xBoundLow: -p.height*.01, xBoundHi: p.height*.06, yBoundLow: -p.height*.2, yBoundHi: p.height*.06,
+        angleLow: -30, angleHi: 50, angleRel: "yInv",
+        roundOut: "next", roundDist: p.height*.3, bezAdjust: .25
+      },
+      {stage:11,point:10, xBoundLow: -p.height*.06, xBoundHi: p.height*.06, yBoundLow: -p.height*.16, yBoundHi: p.height*.06,  //WORK HERE
+        bez1Hi: p.height*.2, bez1Low: -p.height*.01, bez1Rel: "yInv",
+        bez2Hi: p.height*.4, bez2Low: -p.height*.01, bez2Rel: "yInv",
+        angleLow: -60, angleHi: -1, angleRel: "xDir",
+        roundOut: "next", roundDist: p.height*.2, roundRel: "yInv", roundMin: -p.height*.09, roundMax: p.height*.04
+      },
+      {stage:11,point:9, xBoundLow: -p.height*.06, xBoundHi: p.height*.06, yBoundLow: -p.height*.02, yBoundHi: p.height*.06},
+      {stage:11,point:7, xBoundLow: -p.height*.1, xBoundHi: p.height*0.01, yBoundLow: -p.height*.1, yBoundHi: p.height*0.01, onlyOne: true,
+        // bez1Hi: p.height*.2, bez1Low: p.height*.01, bez2Hi: p.height*.2, bez2Low: p.height*.01
+      },
+      {stage:11,point:6, xBoundLow: -p.height*.3, xBoundHi: -p.height*.1, yBoundLow: -p.height*.06, yBoundHi: -p.height*.03,
+        bez1Hi: p.height*.2, bez1Low: -p.height*.03, bez1Rel: "xInv",
+        bez2Hi: p.height*.2, bez2Low: -p.height*.03, bez2Rel: "xInv",
+        angleLow: -60, angleHi: -10, angleRel: "xDir"
+      },
+      {stage:11,point:5, xBoundLow: -p.height*.30, xBoundHi: p.height*.20, yBoundLow: -p.height*.02, yBoundHi: p.height*.20,
+        bez1Hi: -p.height*.1, bez1Low: -p.height*.3, bez1Rel: "xDir",
+      },
+      {stage:11,point:4, xBoundLow: -p.height*.02, xBoundHi: p.height*.02, yBoundLow: -p.height*.02, yBoundHi: p.height*.20, onlyOne: true},
+      {stage:11,point:3, xBoundLow: -p.height*.02, xBoundHi: p.height*.02, yBoundLow: -p.height*.1, yBoundHi: p.height*.15},
+      {stage:11,point:2, xBoundLow: -p.height*.1, xBoundHi: p.height*0.01, yBoundLow: -p.height*.1, yBoundHi: p.height*0.01, stopStage: 7,// onlyOne: true,
+        bez1Hi: p.height*.1, bez1Low: -p.height*.01, bez1Rel: "xInv",
+        bez2Hi: p.height*.2, bez2Low: -p.height*.01, bez2Rel: "xDir",
+        angleLow: -60, angleHi: 20, angleRel: "xDir",
+        // stopStage: 9
+      },
+      {stage:11, point:0, xBoundLow: -p.height*.15, xBoundHi: p.height*.06, yBoundLow: -p.height*.3, yBoundHi: p.height*.06,
+        bez2Hi: p.height*.05, bez2Low: -p.height*.3, bez2Rel: "yDir",
+        bez1Hi: p.height*.3, bez1Low: -p.height*.04, bez1Rel: "xInv",
+        angleLow: -30, angleHi: 90, angleRel: "yInv"
+      },
+      {stage:7, point:1, xBoundLow: -p.height*.06, xBoundHi: p.height*.06, yBoundLow: -p.height*.06, yBoundHi: p.height*.06,
+        roundOut: "prev", roundDist: p.height*.2, bezAdjust: .25
+      },
       {stage:7, point:8, xBoundLow: -p.height*.03, xBoundHi: p.height*.03, yBoundLow: -p.height*.2, yBoundHi: p.height*.05},
       // {stage:3, point:1, xBoundLow: -p.height*.06, xBoundHi: p.height*.06, yBoundLow: -p.height*.06, yBoundHi: p.height*.06},
-      // {stage:3, point:0, xBoundLow: -p.height*.1, xBoundHi: p.height*.4, yBoundLow: -p.height*.2, yBoundHi: p.height*.2},
-      // {stage:2, point:0, xBoundLow: -p.height*.06, xBoundHi: p.height*.06, yBoundLow: -p.height*.06, yBoundHi: p.height*.06},
+      {stage:3, point:0, xBoundLow: -p.height*.1, xBoundHi: p.height*.4, yBoundLow: -p.height*.2, yBoundHi: p.height*.1},
+      {stage:2, point:0, xBoundLow: -p.height*.3, xBoundHi: p.height*.01, yBoundLow: -p.height*.1, yBoundHi: p.height*.1,
+        angleLow: -60, angleHi: 1, angleRel: "xDir"
+      },
       // {stage:3, point:3, xBoundLow: -p.height*.2, xBoundHi: p.height*.2, yBoundLow: -p.height*.2, yBoundHi: p.height*.2}
     ]
+    vertexControls = false
+
+    // randPts = []
 
 
     for (let k=0; k< randPts.length; k++) {
+      
       let indices = randPts[k]
+
+      // set Rels to false if they dont exist
+      if (!indices.hasOwnProperty("bez1Rel")) { 
+        indices["bez1Rel"] = false;
+      }
+      if (!indices.hasOwnProperty("bez2Rel")) { 
+        indices["bez2Rel"] = false;
+      }
+      if (!indices.hasOwnProperty("angleRel")) { 
+        indices["angleRel"] = false;
+      }
+
       let pt = {
         x: easyPointsHistory[indices.stage][indices.point].x,
         y: easyPointsHistory[indices.stage][indices.point].y
+      }
+      let partnerPt = {x:0,y:0}
+      if (indices.partnerPoint) {
+        partnerPt = {
+          x: easyPointsHistory[indices.stage][indices.partnerPoint].x,
+          y: easyPointsHistory[indices.stage][indices.partnerPoint].y
+        }
       }
       let xRand
       let yRand
@@ -420,39 +506,96 @@ let mainSketch = function(p) {
       let bez1Rand
       let bez2Rand
       if (indices.bez1Hi) {
-        bez1Rand = p.random(indices.bez1Low, indices.bez1Hi)
+        // bez1Rand = p.random(indices.bez1Low, indices.bez1Hi)
+        bez1Rand = randRelChg(xRand, yRand, indices, indices.bez1Low, indices.bez1Hi, indices.bez1Rel)
+
       }
       if (indices.bez2Hi) {
-        bez2Rand = p.random(indices.bez2Low, indices.bez2Hi)
+        // bez2Rand = p.random(indices.bez2Low, indices.bez2Hi)
+        bez2Rand = randRelChg(xRand, yRand, indices, indices.bez2Low, indices.bez2Hi, indices.bez2Rel)
       }
 
-      if (indices.onlyOne) {
-        if (indices.xBoundHi) {
-          if(indices.stage == 11 && indices.point == 2) {console.log(xRand)}
-          easyPointsHistory[indices.stage][indices.point].targetx += xRand
-          easyPointsHistory[indices.stage][indices.point].targety += yRand
-        }
-        if (indices.bez1Hi) {
-          easyPointsHistory[indices.stage][indices.point].targetbez1 += bez1Rand
-        }
-        if (indices.bez2Hi) {
-          easyPointsHistory[indices.stage][indices.point].targetbez1 += bez2Rand
-        }
+      let angleChange
+      if (indices.angleHi) {
+        angleChange = randRelChg(xRand, yRand, indices, indices.angleLow, indices.angleHi, indices.angleRel)
       }
-      else {
-        for (let i=0; i < easyPointsHistory.length-1; i++) {
-          for (let j=0; j < easyPointsHistory[i].length; j++) {
-            if (p.floor(easyPointsHistory[i][j].x) == p.floor(pt.x) && p.floor(easyPointsHistory[i][j].y) == p.floor(pt.y)) {
-            // if (easyPointsHistory[i][j].x == pt.x && easyPointsHistory[i][j].y == pt.y) {
-              if (indices.xBoundHi) {
-                easyPointsHistory[i][j].targetx += xRand
-                easyPointsHistory[i][j].targety += yRand
+
+      let bezAdjust
+      let whichBez
+      if (indices.roundOut) {
+        // specify next or prev
+        // specify distance where problems arise
+        // specify how much to decrease
+        // check distance between this point and next point 
+        // check difference in angle
+        // if distance and anglediff are low, decrease the point's appropriate bezier
+      }
+
+
+      let length = indices.stopStage || 0;
+      if (indices.onlyOne) {length = indices.stage}
+      for (let i=length; i < easyPointsHistory.length - 1; i++) {
+        for (let j=0; j < easyPointsHistory[i].length; j++) {
+          // if (p.floor(easyPointsHistory[i][j].x) == p.floor(pt.x) && p.floor(easyPointsHistory[i][j].y) == p.floor(pt.y)) {
+          if (easyPointsHistory[i][j].x == pt.x && easyPointsHistory[i][j].y == pt.y || easyPointsHistory[i][j].x == partnerPt.x && easyPointsHistory[i][j].y == partnerPt.y) {
+            if (indices.xBoundHi) {
+              easyPointsHistory[i][j].targetx += xRand
+              easyPointsHistory[i][j].targety += yRand
+            }
+            if (indices.bez1Hi) {
+              easyPointsHistory[i][j].targetbez1 += bez1Rand
+            }
+            if (indices.bez2Hi) {
+              easyPointsHistory[i][j].targetbez2 += bez2Rand
+            }
+            if (indices.angleHi) {
+              easyPointsHistory[i][j].targetangle += angleChange
+            }
+          }
+        }
+        length = 0
+        for (let j=0; j < easyPointsHistory[i].length; j++) { // looping again to make adjustments after last changes
+          if (easyPointsHistory[i][j].x == pt.x && easyPointsHistory[i][j].y == pt.y || easyPointsHistory[i][j].x == partnerPt.x && easyPointsHistory[i][j].y == partnerPt.y) {
+            if (indices.roundOut) {
+              let prevIndex = (j - 1 + easyPointsHistory[i].length) % easyPointsHistory[i].length;
+              let nextIndex = (j + 1) % easyPointsHistory[i].length;
+              if (indices.roundOut == "next") {
+                target = nextIndex
+                whichBez = "targetbez1"
+              } else {
+                target = prevIndex
+                whichBez = "targetbez2"
               }
-              if (indices.bez1Hi) {
-                easyPointsHistory[i][j].targetbez1 += bez1Rand
-              }
-              if (indices.bez2Hi) {
-                easyPointsHistory[i][j].targetbez1 += bez2Rand
+              distance = p.dist(easyPointsHistory[i][j].targetx, easyPointsHistory[i][j].targety, easyPointsHistory[i][target].targetx, easyPointsHistory[i][target].targety)
+              angleDiff = Math.abs(easyPointsHistory[i][j].targetangle-easyPointsHistory[i][target].targetangle)
+              // console.log(distance)
+              let distanceMovedX = easyPointsHistory[i][target].targetx - originalLocations[i][target].x;
+              let distanceMovedY = easyPointsHistory[i][target].targety - originalLocations[i][target].y;
+              // console.log("distanceMovedX",distanceMovedX, distanceMovedY)
+              bezAdjust = indices.bezAdjust || .5
+              //grab xBoundLow, xBoundHi, yBoundLow, yBoundHi from "target"
+              switch (indices.roundRel) {
+                case "yInv":
+                  easyPointsHistory[i][j][whichBez] += p.map(distanceMovedY, p.height*.1, -p.height*.1, indices.roundMin, indices.roundMax)
+                  console.log("map",p.map(distanceMovedY, p.height*.1, -p.height*.1, indices.roundMin, indices.roundMax))
+                  break;
+                case "xInv":
+                  easyPointsHistory[i][j][whichBez] += p.map(distanceMovedX, p.height*.1, -p.height*.1, indices.roundMin, indices.roundMax)
+                  break;
+                case "yDir":
+                  easyPointsHistory[i][j][whichBez] += p.map(distanceMovedY,-p.height*.1, p.height*.1, indices.roundMin, indices.roundMax)
+                  break;
+                case "xDir":
+                  easyPointsHistory[i][j][whichBez] += p.map(distanceMovedX,-p.height*.1, p.height*.1, indices.roundMin, indices.roundMax)
+                  break;
+              
+                default:
+                  if (distance < indices.roundDist ) {
+                    bezAdjust = indices.bezAdjust || .5
+                    console.log("bezAdjust", j)
+                    easyPointsHistory[i][j][whichBez] *= bezAdjust
+                  }
+                  break;
               }
             }
           }
@@ -461,8 +604,8 @@ let mainSketch = function(p) {
     }
 
     // random rotation
-    // let angle = 0;
     let angle = p.random(360);
+    // angle = 0;
     let radians = angle * (Math.PI / 180);
 
     for (let i = 0; i < easyPointsHistory.length-1; i++) { //length-1 because rotation was being applied twice to last item for some reason
@@ -510,24 +653,16 @@ let mainSketch = function(p) {
     // putInPlace();
     // createButtonsForMoves(p);
 
-    for (let i = 0; i < easyPointsHistory.length; i++) {
-      originalLocations.push([]);
-      for (let j = 0; j < easyPointsHistory[i].length; j++) {
-          originalLocations[i].push({
-              x: easyPointsHistory[i][j].x,
-              y: easyPointsHistory[i][j].y
-          });
-        }
-    }
 
-    // function scrollToPercentage(percentage) {
-    //   const totalHeight = document.documentElement.scrollHeight - document.documentElement.clientHeight;
-    //   const scrollPosition = totalHeight * (percentage / 100);
-    //   window.scrollTo({ top: scrollPosition, behavior: 'instant' });
-    // }
+
+    function scrollToPercentage(percentage) {
+      const totalHeight = document.documentElement.scrollHeight - document.documentElement.clientHeight;
+      const scrollPosition = totalHeight * (percentage / 100);
+      window.scrollTo({ top: scrollPosition, behavior: 'instant' });
+    }
     
-    // // Example usage: scroll to 50% of the page height
-    // scrollToPercentage(50);
+    // Example usage: scroll to 50% of the page height
+    scrollToPercentage(50);
     
 
   }
@@ -593,7 +728,7 @@ let mainSketch = function(p) {
     // let step = (targetProgress - progress) * easingFactor;
     // let step = Math.min(Math.abs(targetProgress - progress), 0.02) * Math.sign(targetProgress - progress);
     let targetStep = (targetProgress - progress) * easingFactor;
-    let step = Math.min(Math.abs(targetStep), 0.03) * Math.sign(targetStep);
+    let step = Math.min(Math.abs(targetStep), 0.3) * Math.sign(targetStep);
     if(step){progress += step}
     localT = progress - passedIntervals
 
@@ -717,28 +852,34 @@ let mainSketch = function(p) {
         let indices = randPts[d];
         let originalX = originalLocations[indices.stage][indices.point].x;
         let originalY = originalLocations[indices.stage][indices.point].y;
+        let currentX = easyPointsHistory[indices.stage][indices.point].x;
+        let currentY = easyPointsHistory[indices.stage][indices.point].y;
         let xBoundLow = originalX + indices.xBoundLow;
         let xBoundHi = originalX + indices.xBoundHi;
         let yBoundLow = originalY + indices.yBoundLow;
         let yBoundHi = originalY + indices.yBoundHi;
-    
+        
+        p.strokeWeight(1);
+
         // for (let i = 0; i < easyPointsHistory.length; i++) {
             for (let j = 0; j < easyPointsHistory[passedIntEZ].length; j++) {
-                if (easyPointsHistory[passedIntEZ][j].x === originalX && easyPointsHistory[passedIntEZ][j].y === originalY) {
-                    p.stroke(255, 0, 0);
-                    p.strokeWeight(2);
+                if (easyPointsHistory[passedIntEZ][j].x === currentX && easyPointsHistory[passedIntEZ][j].y === currentY) {
+                    // p.stroke(255, 0, 0);
+                    p.stroke(colorthis[d]);
                     p.noFill();
+                    p.text(indices.stage+","+indices.point,xBoundLow, yBoundLow)
                     p.rect(xBoundLow, yBoundLow, xBoundHi - xBoundLow, yBoundHi - yBoundLow);
+
                 }
             }
             for (let j = 0; j < easyPointsHistory[nextInterval].length; j++) {
-              if (easyPointsHistory[nextInterval][j].x === originalX && easyPointsHistory[nextInterval][j].y === originalY) {
-                  p.stroke(255, 0, 0);
-                  p.strokeWeight(2);
+              if (easyPointsHistory[nextInterval][j].x === currentX && easyPointsHistory[nextInterval][j].y === currentY) {
+                  // p.stroke(255, 0, 0);
+                  p.stroke(colorthis[d]);
                   p.noFill();
+                  p.text(indices.stage+","+indices.point,xBoundLow, yBoundLow)
                   p.rect(xBoundLow, yBoundLow, xBoundHi - xBoundLow, yBoundHi - yBoundLow);
-                  console.log(nextInterval)
-                  console.log(randPts[d])
+
               }
             }
 
@@ -824,7 +965,9 @@ let cursorSketch = function(p) {
 
   p.draw = function() {
       p.clear()
-      p.image(imgCursor, p.mouseX, p.mouseY , 16, 22);  // Draw the image at the mouse location
+      if (p.mouseX != 0) {
+        p.image(imgCursor, p.mouseX, p.mouseY , 16, 22);  // Draw the image at the mouse location
+      }
   };
 };
 
