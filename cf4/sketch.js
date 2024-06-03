@@ -50,6 +50,7 @@ let colorthis = []
 let targetProgress = 0
 let progress = 0
 let easingFactor = .055
+let speedLimit = .03
 let localT = 0
 let nextInterval, passedIntervals, passedIntEZ, remainingIntervals, interval, scrollHeight
 let mode = "full"
@@ -655,14 +656,14 @@ let mainSketch = function(p) {
 
 
 
-    function scrollToPercentage(percentage) {
-      const totalHeight = document.documentElement.scrollHeight - document.documentElement.clientHeight;
-      const scrollPosition = totalHeight * (percentage / 100);
-      window.scrollTo({ top: scrollPosition, behavior: 'instant' });
-    }
+    // function scrollToPercentage(percentage) {
+    //   const totalHeight = document.documentElement.scrollHeight - document.documentElement.clientHeight;
+    //   const scrollPosition = totalHeight * (percentage / 100);
+    //   window.scrollTo({ top: scrollPosition, behavior: 'instant' });
+    // }
     
-    // Example usage: scroll to 50% of the page height
-    scrollToPercentage(50);
+    // // Example usage: scroll to 50% of the page height
+    // scrollToPercentage(50);
     
 
   }
@@ -728,7 +729,7 @@ let mainSketch = function(p) {
     // let step = (targetProgress - progress) * easingFactor;
     // let step = Math.min(Math.abs(targetProgress - progress), 0.02) * Math.sign(targetProgress - progress);
     let targetStep = (targetProgress - progress) * easingFactor;
-    let step = Math.min(Math.abs(targetStep), 0.3) * Math.sign(targetStep);
+    let step = Math.min(Math.abs(targetStep), speedLimit) * Math.sign(targetStep);
     if(step){progress += step}
     localT = progress - passedIntervals
 
