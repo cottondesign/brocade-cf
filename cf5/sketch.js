@@ -322,7 +322,7 @@ let mainSketch = function(p) {
     }
 
 
-    canvasSize = 1000
+    canvasSize = (p.windowWidth > 1000) ? 1000 : p.windowWidth
     canvas = p.createCanvas(canvasSize, canvasSize)
     canvas.style("-webkit-filter", `url("#svgfilter")`).style("filter", `url("#svgfilter")`);
     canvas.style('position', 'absolute');
@@ -1043,11 +1043,11 @@ function drawSegments(p, start, end) {
       if (easyPoints[j].zIndex == i) {
         p.strokeCap(p.SQUARE)
         p.stroke(strokeColor)
-        p.strokeWeight(14)
+        p.strokeWeight(canvasSize/80)
         drawSegment(j, p)
         p.stroke(bgColor)
         // stroke(colors[easyPoints[j].grp])
-        p.strokeWeight(8)
+        p.strokeWeight(canvasSize/160)
         drawSegment(j, p)
       }
     }
