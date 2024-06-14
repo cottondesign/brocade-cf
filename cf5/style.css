@@ -1,0 +1,60 @@
+html, body {
+  margin: 0;
+  padding: 0;
+}
+
+body {
+ /* background-color: #171C31; */
+ color: #171C31
+}
+
+canvas {
+  display: block;
+  cursor: none;
+}
+
+#buttons-container {
+  display: flex;
+  flex-direction: column;
+  margin-right: 20px;
+  position: fixed;
+  width: 200px;
+  height: 95vh;
+  top: 20px;
+  left: 20px;
+  /* background: #fff; */
+  z-index: 10;
+  justify-content: center;
+}
+
+.topMarginButton {
+  margin-top: 12px;
+}
+
+#sketch-holder, #sketch-holder-2, #sketch-holder-3 {
+  position: fixed;
+  height: 100vh;
+  width: 100vw;
+  display:flex;
+  align-items: center;
+  justify-content: center;
+}
+
+#sketch-holder-2 {
+  z-index:-10;
+}
+
+#sketch-holder-3 {
+  z-index:-5;
+}
+
+#svg-container {
+  display: none;
+}
+
+#btmSketch {
+  /* z-index:-10 */
+}
+#cursorSketch {
+  z-index: -5
+}
