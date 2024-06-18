@@ -1,4 +1,4 @@
-
+<script>
 
 let easyPoints = [];
 let easyPointsHistory = [];
@@ -17,9 +17,7 @@ let tickStart = 1
 let tick = tickStart
 let center
 let bgColor = "#171C31"
-// let numSides = Math.floor(Math.random()*4)+6
 let numSides = Math.floor(Math.random()*2)+7
-// let motionSpeed = .1
 
 
 let debugging = false
@@ -38,7 +36,7 @@ let nextInterval, passedIntervals, passedIntEZ, remainingIntervals, interval, sc
 let mode = "full"
 let numTangles
 let randPts = []
-let originalLocations = []; // To store the original locations
+let originalLocations = [];
 let canvasSize
 let heightChg = .85
 
@@ -48,10 +46,7 @@ let colors = []
 let yes=0
 
 
-let scrollContent = document.getElementById("scroll-content") 
-for (let i=0;i<250;i++) {
-  scrollContent.innerHTML += "&#8595; &#8595; &#8595; <br>"
-}
+
 
 
 
@@ -266,17 +261,6 @@ let culprit = [
     {segment: [47.362,48.1211,77.4753,39.5661,70,26.4277],
       zIndex: 4}
   ]
-
-    // ,[
-    //   {segment: ,
-    //     zIndex: },
-    //   {segment: ,
-    //     zIndex: },
-    //   {segment: ,
-    //     zIndex: },
-    //   {segment: ,
-    //     zIndex: },
-    // ]
   ]
 ]
 
@@ -285,20 +269,21 @@ let culprit = [
 
 
 
+string = `<div id="svg-container">
+        <svg xmlns="http://www.w3.org/2000/svg" version="1.1">
+          <defs>
+            <filter id="svgfilter" color-interpolation-filters="sRGB" type="matrix" x="0%", y="0%" width="100%" and height="100%">
+              <!-- <feTurbulence type="turbulence" baseFrequency=".7" numOctaves="1" result="turbulence" /> -->
+              <feTurbulence type="turbulence" baseFrequency=".1" numOctaves="5" result="turbulence" />
+              <!-- <feDisplacementMap in2="turbulence" in="SourceGraphic" scale="5" xChannelSelector="R" yChannelSelector="G" /> -->
+              <feDisplacementMap in2="turbulence" in="SourceGraphic" scale="2" xChannelSelector="R" yChannelSelector="G" />
+            </filter>
+          </defs>
+        </svg>
+      </div>`
 
-
-
-function createTracker(obj, key) {
-  return new Proxy(obj, {
-    set(target, property, value) {
-      if (property === key) {
-        console.log(`Value changed to ${value}`);
-      }
-      target[property] = value;
-      return true;
-    }
-  });
-}
+// append string to div with id sketch-holder
+document.getElementById("sketch-holder").innerHTML += string
 
 
 
@@ -306,9 +291,6 @@ function createTracker(obj, key) {
 
 let mainSketch = function(p) {
 
-  p.mouseClicked = function() {
-    console.log("clicked: ", p.mouseX, p.mouseY)
-  }
 
   p.setup = function() {
     //for test #2
@@ -347,12 +329,8 @@ let mainSketch = function(p) {
     p.height *= heightChg
     p.noFill();
     p.frameRate(10);
-    cursor = p.loadImage("cursor.png")
-    vertexControlsButton = p.createButton('show/hide debug info');
-    vertexControlsButton.parent('buttons-container');
-    vertexControlsButton.mousePressed(function() {
-      vertexControls = !vertexControls;
-    });
+    // cursor = p.loadImage("cursor.png")
+
     // document.getElementById("sides").innerHTML += numSides
     let randCulprit = p.random(culprit)
     for(let i=0;i<randCulprit.length;i++) {
@@ -568,35 +546,21 @@ let mainSketch = function(p) {
 
       let start = indices.stopStage || 0;
       if (indices.onlyOne) {start = indices.stage}
-      // console.log("start",start, indices.point)
 
-      // let stop = easyPointsHistory.length - 1
       let stop = indices.onlyOne ? start + 2 : easyPointsHistory.length - 1
 
-      // if (indices.stage == 11 && indices.point == 11) {console.log(length,stop)}
-      // if (indices.stage == 9 && indices.point == 9) {console.log(length,stop)}
 
       for (let i=start; i < stop; i++) {
         if(indices.stage == 11 && indices.point == 11) {
-          // console.log("start",start, "stop",stop, i)
-          // debugger
+
         }
-        // if (indices.stage == 9 && indices.point == 9) {console.log("9,9",i)}
-        // if (indices.stage == 11 && indices.point == 11) {console.log("11,11",i)}
-        // if (stop != easyPointsHistory.length-1) {console.log("stop",stop)}
+
 
         for (let j=0; j < easyPointsHistory[i].length; j++) {
           // if (p.floor(easyPointsHistory[i][j].x) == p.floor(pt.x) && p.floor(easyPointsHistory[i][j].y) == p.floor(pt.y)) {
           if (easyPointsHistory[i][j].x == pt.x && easyPointsHistory[i][j].y == pt.y || easyPointsHistory[i][j].x == partnerPt.x && easyPointsHistory[i][j].y == partnerPt.y) {
             ppAmt = indices.partnerPointAmt || 1
-            // if (i == 11 && j == 11) {
-            //   yes +=1
-            //   console.log("stage",i,"point",j, "times",yes)
-            //   console.log(indices.stage,indices.point)
-            //   console.log("low",indices.xBoundLow, "hi", indices.xBoundHi)
-            //   console.log("xRand",xRand,"\nyRand",yRand)
-            //   console.log("x before",easyPointsHistory[i][j].x)
-            // }
+
             if (indices.xBoundHi) {
               easyPointsHistory[i][j].targetx += xRand * ppAmt
               easyPointsHistory[i][j].targety += yRand * ppAmt
@@ -631,19 +595,13 @@ let mainSketch = function(p) {
                     easyPointsHistory[i][j][which] += p.map(xRand, indices.xBoundLow, indices.xBoundHi, indices.otherPt1Low, indices.otherPt1Hi)
                     break;
                 
-                  // default:
-                  //   if (distance < indices.roundDist ) {
-                  //     bezAdjust = indices.bezAdjust || .5
-                  //     console.log("bezAdjust", j)
-                  //     easyPointsHistory[i][j][whichBez] *= bezAdjust
-                  //   }
                     break;
                 }
 
 
               easyPointsHistory[i][indices.otherPt1].targetx += 0 //mapped value either 
               easyPointsHistory[i][indices.otherPt1].targety += 0 
-            } 
+            }
           }
         }
         for (let j=0; j < easyPointsHistory[i].length; j++) { // looping again to make adjustments after last changes
@@ -776,9 +734,7 @@ let mainSketch = function(p) {
           // console.log("start",start, "stop",stop, i)
           // debugger
         }
-        // if (indices.stage == 9 && indices.point == 9) {console.log("9,9",i)}
-        // if (indices.stage == 11 && indices.point == 11) {console.log("11,11",i)}
-        // if (stop != easyPointsHistory.length-1) {console.log("stop",stop)}
+
 
 
         for (let j=0; j < easyPointsHistory[i].length; j++) { // looping again to make adjustments after last changes
@@ -791,17 +747,13 @@ let mainSketch = function(p) {
                 //make normalized value of distance moved (0 if not in target direction and axis) for both this point and otherPt1
                 // multiply the values together, multiply by otherMoveMax1, and change otherPt1's target attribute by that amount
                 // console.log("otherPt1Entry",otherPt1Entry)
+                
                 let distanceMovedXo = easyPointsHistory[i][indices.otherPt1].targetx - originalLocations[i][indices.otherPt1].x;
                 // console.log("easyPointsHistory[i][indices.otherPt1]",easyPointsHistory[i][indices.otherPt1].targetx, "originalLocations[i][indices.otherPt1]",originalLocations[i][indices.otherPt1].x)
                 let distanceMovedYo = easyPointsHistory[i][indices.otherPt1].targety - originalLocations[i][indices.otherPt1].y;
                 let distanceMovedX = easyPointsHistory[i][indices.point].targetx - originalLocations[i][indices.point].x;
                 let distanceMovedY = easyPointsHistory[i][indices.point].targety - originalLocations[i][indices.point].y;
-                // console.log("points",indices.otherPt1, indices.point)
-                // console.log("distanceMovedXo",distanceMovedXo, "distanceMovedYo",distanceMovedYo)
-                // console.log("distanceMovedX",distanceMovedX, "distanceMovedY",distanceMovedY)
-                // console.log("distanceMovedXo",distanceMovedXo, "distanceMovedYo",distanceMovedYo)
-                // console.log("distanceMovedX",distanceMovedX, "distanceMovedY",distanceMovedY)
-                // otherPt1: 11, thisState1: "yLow", otherState1: "yHi", otherMoveMax1: p.height*.1, otherPt1Which: "targety"
+                
                 let valueo //x low, x high, y low, y high
                 let valueol
                 let value
@@ -852,14 +804,26 @@ let mainSketch = function(p) {
                     valuel = indices.xBoundLow
                     break;
                 }
+                valueo = valueo || 0
+                value = value || 0
+                disto = disto || 0
+                dist = dist || 0
+                valueol = valueol || 0
+                valuel = valuel || 0
+                // if(i==11 && j==1) {
+                console.log("RESULTS ______")
+                console.log("0: indices",indices)
+                console.log("1: otherPt1Entry",otherPt1Entry)
+                console.log("2: valueo",valueo, "value",value)
+                console.log("3: disto",disto, "dist",dist)
+                // }
                 // console.log("valueo",valueo, "value",value)
                 let distanceMovedONorm = p.max(0, p.map(disto, valueol, valueo, -1, 1))
                 let distanceMovedNorm = p.max(0, p.map(dist, valuel, value, -1, 1))
-                console.log("disto",disto, "dist",dist)
-                // HELP HERE: why are these values never both positive?
-                console.log(indices.stage,indices.otherPt1,"distanceONorm",distanceMovedONorm, "distanceNorm",distanceMovedNorm)
+                // console.log(indices.stage,indices.otherPt1,"distanceONorm",distanceMovedONorm, "distanceNorm",distanceMovedNorm)
                 let distanceMovedMult = distanceMovedONorm * distanceMovedNorm * indices.otherMoveMax1
-                console.log("distanceMovedMult",distanceMovedMult)
+                distanceMovedMult = distanceMovedMult || 0
+                // console.log("distanceMovedMult",distanceMovedMult)
                 // change otherPt1's target attribute by that distanceMovedMult
                 easyPointsHistory[i][indices.otherPt1][indices.otherPt1Which] += distanceMovedMult
               }
@@ -871,7 +835,7 @@ let mainSketch = function(p) {
 
     // random rotation
     let angle = debugging ? 0 : p.random(360);
-    angle = 0
+    // angle = 0
     let radians = angle * (Math.PI / 180);
 
     for (let i = 0; i < easyPointsHistory.length-1; i++) { //length-1 because rotation was being applied twice to last item for some reason
@@ -889,8 +853,7 @@ let mainSketch = function(p) {
         let translatedY = y - center.y;
 
         // Rotate point
-        // let rotatedX = translatedX * Math.cos(radians) - translatedY * Math.sin(radians);
-        // let rotatedY = translatedX * Math.sin(radians) + translatedY * Math.cos(radians);
+
         let rotatedX = translatedX * Math.cos(radians) - translatedY * Math.sin(radians);
         let rotatedY = translatedX * Math.sin(radians) + translatedY * Math.cos(radians);
 
@@ -918,9 +881,7 @@ let mainSketch = function(p) {
       let cp2y = easyPoints[i].y + Math.sin(angleRad + Math.PI) * easyPoints[i].bez2;
       actualCoords.push([cp1x, cp1y, cp2x, cp2y, easyPoints[i].x, easyPoints[i].y]);
     }
-    // fullTangle(p)
-    // putInPlace();
-    // createButtonsForMoves(p);
+
 
 
 
@@ -937,43 +898,35 @@ let mainSketch = function(p) {
   }
 
 
-  window.onscroll = function() {
+  // window.onscroll = function() {
 
 
-    // Store the last interval passed in a variable, initialize if not exist
-    window.lastInterval = window.lastInterval || 0;
+  //   // Store the last interval passed in a variable, initialize if not exist
+  //   window.lastInterval = window.lastInterval || 0;
+
 
   
-    // Check if new interval has been reached
-    // if (passedIntervals > window.lastInterval) {
-    //   undo();  // Call the undo function
-    //   window.lastInterval = passedIntervals;  // Update the last interval
-    // }
-    for(let i=0;i<easyPoints.length; i++) {
-      // easyPoints[i].step = Math.max(0, (currentScroll/interval) - (numTangles-moveList.length)+1); // setting step to % progress through the current interval
-    }
-  
-    // generate new unknot
-    if (Math.floor(window.scrollY / interval) == 0 && moveList.length == 1) {
-      wrapSegments = [];
-      moveList = [];
-      // groups = []
-      randSpots = {
-        all:[],
-        rand:[]
-      }
-      easyPoints = JSON.parse(JSON.stringify(origEasyPoints))
-      easyPointsHistory = []
-      easyPointsHistory.push(JSON.parse(JSON.stringify(easyPoints)))
-      easyPointsHistory.push(JSON.parse(JSON.stringify(easyPoints)))
-      tick = tickStart
-      passedIntervals = 0
-      progress = targetProgress
-      fullTangle(p)
-    }
+  //   // generate new unknot
+  //   if (Math.floor(window.scrollY / interval) == 0 && moveList.length == 1) {
+  //     wrapSegments = [];
+  //     moveList = [];
+  //     // groups = []
+  //     randSpots = {
+  //       all:[],
+  //       rand:[]
+  //     }
+  //     easyPoints = JSON.parse(JSON.stringify(origEasyPoints))
+  //     easyPointsHistory = []
+  //     easyPointsHistory.push(JSON.parse(JSON.stringify(easyPoints)))
+  //     easyPointsHistory.push(JSON.parse(JSON.stringify(easyPoints)))
+  //     tick = tickStart
+  //     passedIntervals = 0
+  //     progress = targetProgress
+  //     fullTangle(p)
+  //   }
 
 
-  };
+  // };
 
 
   p.draw = function() {
@@ -1043,35 +996,12 @@ let mainSketch = function(p) {
       actualCoords.push([cp1x, cp1y, cp2x, cp2y, easyPoints[i].x, easyPoints[i].y]);
     }
     
-    // localT = p.max(0, p.min(1,progress - passedIntervals))
-    // console.log("targetProgress", targetProgress)
-    // console.log("progress", progress)
-    // console.log("localT", localT)
-    // console.log("targetProgress: ",targetProgress,"\nprogress: ", progress)
-    // console.log("passedIntervals",passedIntervals)
 
-    // p.background(bgColor);
     p.clear()
     p.noFill()
     
     drawSegments(p, 0, easyPoints.length);
-    // drawWrapSegments(p, "top")
-    // p.fill(0,0,255)
-    // p.circle(center.x, center.y, 30)
 
-
-
-
-    
-    // // -------- print angle - for testing
-    // noStroke()
-    // textSize(8)
-    // fill(0,0,255)
-    // easyPoints.forEach((v, index) => {
-    //   // text(Math.round(v.angle),v.x,v.y)
-    //   text(index,v.x,v.y)
-
-    // });
 
     // ---------------- drawing vertex controls
     if(vertexControls) {
@@ -1091,7 +1021,6 @@ let mainSketch = function(p) {
         p.textSize(20)
         p.fill(255,0,0);
         p.circle(actualCoords[i][4], actualCoords[i][5], 6);
-        // p.text(i, actualCoords[i][4]+2, actualCoords[i][5])
       }
 
       for (let d = 0; d < randPts.length; d++) {
@@ -1196,74 +1125,9 @@ let mainSketch = function(p) {
 
 }
 
-let btmSketch = function(p) {
-  p.setup = function() {
-      canvas = p.createCanvas(canvasSize,canvasSize)
-      canvas.style("-webkit-filter", `url("#svgfilter")`).style("filter", `url("#svgfilter")`);
-      canvas.style('position', 'absolute');
-      canvas.parent('sketch-holder-2');
-      canvas.id('btmSketch');
-      
-
-      p.noFill();
-      p.frameRate(15);
-  };
-
-  p.draw = function() {
-      p.background("#171C31");
-      // drawWrapSegments(p, "bottom")
-      drawSegments(p, 0, Math.floor(easyPoints.length / 2)-1);
-
-      // p.background(255,0,0)
-      // p.clear()
-      // drawHalfSegments(p);
-  };
-
-  p.keyPressed = function() {
-    if (p.key === 'r') {
-      randomMove(p)
-    } else if (p.key === 'u') {
-      undo()
-    } else if (p.key === 's') {
-      console.log("nextInterval",nextInterval)
-      console.log("passedIntEZ",passedIntEZ)
-    }
-
-  }
-
-};
-
-
-
-let cursorSketch = function(p) {
-  let imgCursor;  // Variable to hold the image
-
-  p.preload = function() {
-      imgCursor = p.loadImage('cursor.png');  // Load the image
-  };
-
-  p.setup = function() {
-      canvas = p.createCanvas(800, 800);  // Create a canvas
-      canvas.parent('sketch-holder-3');
-      canvas.id('cursorSketch');
-      p.imageMode(p.CENTER)
-      p.noCursor();  // Optionally hide the default cursor
-  };
-
-  p.draw = function() {
-      p.clear()
-      if (p.mouseX != 0) {
-        p.image(imgCursor, p.mouseX, p.mouseY , 16, 22);  // Draw the image at the mouse location
-      }
-  };
-};
-
 
 
 new p5(mainSketch, 'canvasContainer1');
-// new p5(cursorSketch, 'canvasContainer1');
-// new p5(btmSketch, 'canvasContainer2');
-
 
 
 
@@ -1385,17 +1249,4 @@ function subdivideHistory(which, t, p){
 
 
 
-function putInPlace() {
-  for (let i = 0; i<easyPoints.length; i++) {
-    easyPoints[i].x = easyPoints[i].targetx
-    easyPoints[i].y = easyPoints[i].targety
-    easyPoints[i].angle = easyPoints[i].targetangle
-    easyPoints[i].bez1 = easyPoints[i].targetbez1
-    easyPoints[i].bez2 = easyPoints[i].targetbez2
-  }
-}
-
-
-
-
-
+</script>
