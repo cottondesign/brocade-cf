@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>p5.js Shader Example</title>
+</head>
+<body>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.4.0/p5.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.4.0/addons/p5.dom.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.4.0/addons/p5.sound.js"></script>
+
+  <!-- Vertex shader -->
+  <script id="shader.vert" type="x-shader/x-vertex">
+    attribute vec3 aPosition;
+    attribute vec2 aTexCoord;
+    varying vec2 vTexCoord;
+
+    void main() {
+      vTexCoord = aTexCoord;
+      gl_Position = vec4(aPosition, 1.0);
+    }
+  </script>
+
+  <!-- Fragment shader -->
+  <script id="shader.frag" type="x-shader/x-fragment">
+    #ifdef GL_ES
+    precision mediump float;
+    #endif
+
+    uniform sampler2D texture;
+    uniform vec2 resolution;
+    uniform float time;
+
+    void main() {
+      vec2 st = gl_FragCoord.xy / resolution;
+
+      // Sample the texture
+      vec4 color = texture2D(texture, st);
+
+      // Add noise
+      float noise = (fract(sin(dot(st.xy, vec2(12.9898, 78.233))) * 43758.5453123) - 0.5) * 0.2;
+      color.rgb += noise;
+
+      // Simple blur by averaging surrounding pixels
+      vec4 blur = vec4(0.0);
+      int samples = 9;
+      for (int x = -1; x <= 1; x++) {
+        for (int y = -1; y <= 1; y++) {
+          vec2 offset = vec2(float(x), float(y)) / resolution;
+          blur += texture2D(texture, st + offset);
+        }
+      }
+      blur /= float(samples);
+      color = blur;
+
+      // Apply threshold
+      float avg = (color.r + color.g + color.b) / 3.0;
+      float threshold = 0.5;
+      if (avg > threshold) {
+        color.rgb = vec3(1.0);
+      } else {
+        color.rgb = vec3(0.0);
+      }
+
+      gl_FragColor = color;
+    }
+  </script>
+
+  <script>
+    let img;
+    let shaderProgram;
+
+    function preload() {
+      img = loadImage('https://media.istockphoto.com/id/1183804334/vector/logo-elements-design.jpg?s=612x612&w=0&k=20&c=l-Jp-vLvgh5pyViVQ9TKBBVBl0YTeZ6v-LUsVMGLLwk='); // Load the image
+      shaderProgram = loadShader('shader.vert', 'shader.frag'); // Load the shaders
+    }
+
+    function setup() {
+      createCanvas(612, 612, WEBGL);
+      noStroke();
+      img.resize(width, height);
+    }
+
+    function draw() {
+      shader(shaderProgram);
+      shaderProgram.setUniform('texture', img);
+      shaderProgram.setUniform('resolution', [width, height]);
+      shaderProgram.setUniform('time', millis() / 1000.0);
+      rect(0, 0, width, height);
+    }
+  </script>
+</body>
+</html>
