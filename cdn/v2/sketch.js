@@ -38,6 +38,7 @@ let randPts = []
 let originalLocations = [];
 let canvasSize
 let heightChg = .85
+let opacity = 0
 
 
 //for test #2
@@ -305,7 +306,7 @@ let mainSketch = function(p) {
     canvasSize = (p.windowWidth > 1000) ? 1000 : p.windowWidth
     canvas = p.createCanvas(canvasSize, canvasSize)
     canvas.style("-webkit-filter", `url("#svgfilter")`).style("filter", `url("#svgfilter")`);
-    canvas.style('position', 'absolute');
+    // canvas.style('position', 'absolute');
     canvas.parent('sketch-holder');
     center = {x:p.width/2, y:p.height/2}
     p.width *= .6
@@ -903,7 +904,7 @@ let mainSketch = function(p) {
 
   p.draw = function() {
 
-    
+
     scrollHeight = document.documentElement.scrollHeight - window.innerHeight-0;
     interval = scrollHeight / numTangles;
     // Divide by the number of intervals
@@ -1099,6 +1100,11 @@ let mainSketch = function(p) {
 
 
     }
+    let alpha = p.max(0, 1-opacity)
+    p.background(23, 28, 49, alpha*255)
+    // p.background(0)
+    opacity += .1
+    // console.log("opacity", opacity)
 
   }
 
