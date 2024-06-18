@@ -303,7 +303,8 @@ let mainSketch = function(p) {
     }
 
 
-    canvasSize = (p.windowWidth > 1000) ? 1000 : p.windowWidth
+    // canvasSize = (p.windowWidth > 1000) ? 1000 : p.windowWidth
+    canvasSize = p.min(window.innerWidth, 1400);
     canvas = p.createCanvas(canvasSize, canvasSize)
     canvas.style("-webkit-filter", `url("#svgfilter")`).style("filter", `url("#svgfilter")`);
     // canvas.style('position', 'absolute');
@@ -908,7 +909,7 @@ let mainSketch = function(p) {
     scrollHeight = document.documentElement.scrollHeight - window.innerHeight-0;
     interval = scrollHeight / numTangles;
     // Divide by the number of intervals
-    targetProgress = p.map(window.scrollY, 0,sketchHeight, 0,numTangles)
+    targetProgress = p.min( p.map(window.scrollY, 0,sketchHeight, 0,numTangles), numTangles)
     // if(mode == "full") {targetProgress = p.max(numTangles-moveList.length, targetProgress)}
     //variable to make passedintervals based on lag progress not actual scroll
     let asdf = p.map(progress, 0,numTangles,  0,scrollHeight)
@@ -1102,9 +1103,7 @@ let mainSketch = function(p) {
     }
     let alpha = p.max(0, 1-opacity)
     p.background(23, 28, 49, alpha*255)
-    // p.background(0)
-    opacity += .1
-    // console.log("opacity", opacity)
+    opacity += .15
 
   }
 
