@@ -35,6 +35,17 @@ canvas {
   margin-top: 12px;
 }
 
+.dummy {
+  font-size: 5vw;
+  color: white;
+}
+
+@media (max-width: 768px) {
+  .dummy {
+    font-size: 8vw;
+  }
+}
+
 #sketch-holder, #sketch-holder-2, #sketch-holder-3 {
   position: sticky;
   top: 0px;

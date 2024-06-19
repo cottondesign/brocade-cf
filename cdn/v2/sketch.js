@@ -21,11 +21,11 @@ let numSides = Math.floor(Math.random()*2)+7
 
 let debugging = false
 let vertexControls = debugging ? true : false;
-let speedLimit = debugging ? .3 : 0.15;
+let speedLimit = debugging ? .3 : 0.23;
 let easingFactor = .2
 
 
-let strokeColor = "#F5F2E1"
+let strokeColor = "#F6F2E2"
 let moveList = []
 let colorthis = []
 let targetProgress = 0
@@ -305,7 +305,9 @@ let mainSketch = function(p) {
 
 
     // canvasSize = (p.windowWidth > 1000) ? 1000 : p.windowWidth
-    canvasSize = (window.innerWidth > 800) ? p.min(window.innerWidth-200, 1400) : window.innerWidth;
+    width = (window.innerWidth > 800) ? p.min(window.innerWidth-200, 1400) : window.innerWidth;
+    height = window.innerHeight;
+    canvasSize = p.min(width, height)
     canvas = p.createCanvas(canvasSize, canvasSize)
     canvas.style("-webkit-filter", `url("#svgfilter")`).style("filter", `url("#svgfilter")`);
     canvas.style('z-index', '50');
@@ -1137,11 +1139,11 @@ function drawSegments(p, start, end) {
       if (easyPoints[j].zIndex == i) {
         p.strokeCap(p.SQUARE)
         p.stroke(strokeColor)
-        p.strokeWeight(canvasSize/80)
+        p.strokeWeight(canvasSize/90 + 4)
         drawSegment(j, p)
         p.stroke(bgColor)
         // stroke(colors[easyPoints[j].grp])
-        p.strokeWeight(canvasSize/160)
+        p.strokeWeight(canvasSize/180 + 2)
         drawSegment(j, p)
       }
     }
