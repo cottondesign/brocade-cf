@@ -283,7 +283,8 @@ string = `<div id="svg-container">
       </div>`
 
 // append string to div with id sketch-holder
-document.getElementById("sketch-holder").innerHTML += string
+document.getElementById("sketch-holder").innerHTML += string;
+document.getElementById("svg-container").style.position = "absolute";
 
 
 
@@ -304,7 +305,7 @@ let mainSketch = function(p) {
 
 
     // canvasSize = (p.windowWidth > 1000) ? 1000 : p.windowWidth
-    canvasSize = p.min(window.innerWidth, 1400);
+    canvasSize = p.min(window.innerWidth-200, 1400);
     canvas = p.createCanvas(canvasSize, canvasSize)
     canvas.style("-webkit-filter", `url("#svgfilter")`).style("filter", `url("#svgfilter")`);
     // canvas.style('position', 'absolute');
@@ -986,10 +987,10 @@ let mainSketch = function(p) {
     p.clear()
     p.noFill()
 
-    p.fill(255)
-    p.textSize(26)
-    p.text(nextInterval+", "+passedIntEZ, 10, 30)
-    p.noFill()
+    // p.fill(255)
+    // p.textSize(26)
+    // p.text(nextInterval+", "+passedIntEZ, 10, 30)
+    // p.noFill()
     
     drawSegments(p, 0, easyPoints.length);
 
@@ -1146,3 +1147,30 @@ function drawSegments(p, start, end) {
   }
 }
 
+
+
+// change background color of .nav-bar and text color of all children when #partner-logos reaches top of viewport
+// function changeNavColor() {
+//     let partnerLogos = document.getElementById("partner-logos");
+//     if (partnerLogos) {
+//         let partnerLogosTop = partnerLogos.getBoundingClientRect().top;
+//         let navBar = document.getElementsByClassName("nav-bar")[0];
+//         let navBarChildren = navBar.children;
+//         if (partnerLogosTop <= 0) {
+//             navBar.style.backgroundColor = "rgba(0, 0, 0, 0.8)";
+//             for (let i = 0; i < navBarChildren.length; i++) {
+//             navBarChildren[i].style.color = "white";
+//             }
+//         } else {
+//             navBar.style.backgroundColor = "transparent";
+//             for (let i = 0; i < navBarChildren.length; i++) {
+//             navBarChildren[i].style.color = "black";
+//             }
+//         }
+//     } else {
+//         console.log("partnerLogos not found");
+//     }
+// }
+
+// // make changeNavColor run on scroll
+// window.addEventListener("scroll", changeNavColor);
