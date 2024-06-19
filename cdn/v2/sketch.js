@@ -305,9 +305,10 @@ let mainSketch = function(p) {
 
 
     // canvasSize = (p.windowWidth > 1000) ? 1000 : p.windowWidth
-    canvasSize = p.min(window.innerWidth-200, 1400);
+    canvasSize = (window.innerWidth > 800) ? p.min(window.innerWidth-200, 1400) : window.innerWidth;
     canvas = p.createCanvas(canvasSize, canvasSize)
     canvas.style("-webkit-filter", `url("#svgfilter")`).style("filter", `url("#svgfilter")`);
+    canvas.style('z-index', '50');
     // canvas.style('position', 'absolute');
     canvas.parent('sketch-holder');
     center = {x:p.width/2, y:p.height/2}
