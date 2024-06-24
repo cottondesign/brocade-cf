@@ -1179,6 +1179,35 @@ function drawSegments(p, start, end) {
   }
 }
 
+(function() {
+  let resizeTimeout;
+  let lastInnerWidth = window.innerWidth;
+  let lastInnerHeight = window.innerHeight;
+
+  window.addEventListener('resize', function() {
+      // Clear the previous timeout
+      clearTimeout(resizeTimeout);
+      
+      // Set a new timeout
+      resizeTimeout = setTimeout(function() {
+          const innerWidth = window.innerWidth;
+          const innerHeight = window.innerHeight;
+          
+          // Check if the change in dimensions is significant (e.g., more than 100px)
+          if (Math.abs(innerWidth - lastInnerWidth) > 100 || Math.abs(innerHeight - lastInnerHeight) > 100) {
+              // Update last known dimensions
+              lastInnerWidth = innerWidth;
+              lastInnerHeight = innerHeight;
+
+              // Your resize logic here
+              sketch.remove();
+              sketch = new p5(mainSketch, 'canvasContainer1');
+          }
+      }, 100); // Debounce timeout in milliseconds
+  });
+})();
+
+
 
 
 // change background color of .nav-bar and text color of all children when #partner-logos reaches top of viewport
