@@ -267,7 +267,14 @@ let culprit = [
 ]
 
 
-
+// subtract 10 from all the x values in the segments in culprit[0] at all indices
+for(let i=5;i<culprit[0].length;i++) {
+  for(let j=0;j<culprit[0][i].length;j++) {
+    for(let k=0;k<culprit[0][i][j].segment.length;k+=2) {
+      culprit[0][i][j].segment[k] -= 8
+    }
+  }
+}
 
 
 
@@ -311,6 +318,7 @@ let mainSketch = function(p) {
     width = (window.innerWidth > 800) ? p.min(window.innerWidth-200, 1400) : window.innerWidth;
     height = window.innerHeight;
     canvasSize = p.min(width, height)
+    canvasSize *= 1.1
     canvas = p.createCanvas(canvasSize, canvasSize)
     canvas.style("-webkit-filter", `url("#svgfilter")`).style("filter", `url("#svgfilter")`);
     canvas.style('z-index', '50');
@@ -468,7 +476,8 @@ let mainSketch = function(p) {
 
     // random rotation
     sketchAngle = debugging ? 0 : p.random(360);
-    sketchAngle = p.random(360) * (Math.PI / 180);
+    sketchAngle *= (Math.PI / 180);
+    // sketchAngle = p.random(360) * (Math.PI / 180);
     // sketchAngle = 0
 
     for (let i=0; i<easyPointsHistory.length; i++) {
@@ -1168,11 +1177,11 @@ function drawSegments(p, start, end) {
       if (easyPoints[j].zIndex == i) {
         p.strokeCap(p.SQUARE)
         p.stroke(strokeColor)
-        p.strokeWeight(canvasSize/90 + 4)
+        p.strokeWeight(canvasSize/140 + 6)
         drawSegment(j, p)
         p.stroke(bgColor)
         // stroke(colors[easyPoints[j].grp])
-        p.strokeWeight(canvasSize/180 + 2)
+        p.strokeWeight(canvasSize/280 + 3)
         drawSegment(j, p)
       }
     }
