@@ -1,6 +1,7 @@
 
 let easyPoints = [];
 let easyPointsHistory = [];
+let easyPointsHistoryRotated = [];
 let origEasyPoints
 let wrapSegments = [];
 let mainPoints = []
@@ -39,6 +40,7 @@ let originalLocations = [];
 let canvasSize
 let heightChg = .85
 let opacity = 0
+let sketchAngle = 0
 
 
 //for test #2
@@ -295,13 +297,14 @@ let mainSketch = function(p) {
 
   p.setup = function() {
     //for test #2
-    for(let i=0;i<numSides;i++) {
-      colors.push([p.random(255),p.random(255),p.random(255)])
-    }
-
-    for(let i=0;i<20;i++) {
+    // for(let i=0;i<numSides;i++) {
+    //   colors.push([p.random(255),p.random(255),p.random(255)])
+    // }
+    colorthis = []
+    for(let i=0;i<40;i++) {
       colorthis.push([p.random(50,255),p.random(50,255),p.random(50,255)])
     }
+    opacity = 0
 
 
     // canvasSize = (p.windowWidth > 1000) ? 1000 : p.windowWidth
@@ -321,6 +324,7 @@ let mainSketch = function(p) {
     // cursor = p.loadImage("cursor.png")
 
     // document.getElementById("sides").innerHTML += numSides
+    easyPointsHistory = []
     let randCulprit = p.random(culprit)
     for(let i=0;i<randCulprit.length;i++) {
       easyPointsHistory.push([])
@@ -396,7 +400,7 @@ let mainSketch = function(p) {
         roundOut: "next", roundRel: "yInv", roundMin: -p.height*.1, roundMax: p.height*.04,
         otherPt1: 4, otherPt1Rel: "yDir", otherPt1Which: "targety", otherPt1Low: -p.height*.1, otherPt1Hi: p.height*.01,
       },
-      {stage:11,point:9, xBoundLow: -p.height*.001, xBoundHi: p.height*.06, yBoundLow: -p.height*.02, yBoundHi: p.height*.06},
+      {stage:11,point:9, xBoundLow: -p.height*.001, xBoundHi: p.height*.06, yBoundLow: -p.height*.02, yBoundHi: p.height*.06,  onlyOne: true},
       {stage:11,point:7, xBoundLow: -p.height*.1, xBoundHi: p.height*0.01, yBoundLow: -p.height*.1, yBoundHi: p.height*0.01, onlyOne: true,
         // bez1Hi: p.height*.2, bez1Low: p.height*.01, bez2Hi: p.height*.2, bez2Low: p.height*.01
         otherPt1: 8, thisState1: "xHi", otherState1: "xLow", otherMoveMax1: p.height*.9, otherPt1Which: "targetbez1"
@@ -462,42 +466,24 @@ let mainSketch = function(p) {
 
     // randPts = []
 
+    // random rotation
+    sketchAngle = debugging ? 0 : p.random(360);
+    sketchAngle = p.random(360) * (Math.PI / 180);
+    // sketchAngle = 0
+
     for (let i=0; i<easyPointsHistory.length; i++) {
       applyRandomChanges(i)
     }
 
-    // random rotation
-    let angle = debugging ? 0 : p.random(360);
-    angle = 0
-    let radians = angle * (Math.PI / 180);
-
-    for (let i = 0; i < easyPointsHistory.length-1; i++) { //length-1 because rotation was being applied twice to last item for some reason
-      // console.log(radians)
-      for (let j = 0; j < easyPointsHistory[i].length; j++) {
 
 
-        // Get the current target coordinates
-        let x = easyPointsHistory[i][j].targetx;
-        let y = easyPointsHistory[i][j].targety;
 
 
-        // Translate point to origin
-        let translatedX = x - center.x;
-        let translatedY = y - center.y;
 
-        // Rotate point
-
-        let rotatedX = translatedX * Math.cos(radians) - translatedY * Math.sin(radians);
-        let rotatedY = translatedX * Math.sin(radians) + translatedY * Math.cos(radians);
-
-        // Translate point back
-        easyPointsHistory[i][j].targetx = rotatedX + center.x;
-        easyPointsHistory[i][j].targety = rotatedY + center.y;
-        easyPointsHistory[i][j].targetangle += angle;
-
-      }
-
-    }
+    // make copy of originalLocations
+    // for (let i = 0; i < originalLocations.length-1; i++) { //length-1 because rotation was being applied twice to last item for some reason
+      // rotateStage(i, originalLocations, radians)
+    // }
 
     easyPoints = easyPointsHistory[easyPointsHistory.length-1]
 
@@ -530,6 +516,37 @@ let mainSketch = function(p) {
 
   }
 
+  // get original locations for that stage (pre-rotation)
+  // compute randomness for that stage
+  // rotate that stage
+  // update that stage in easyPointsHistory and originalLocations
+
+  rotatePoint = function(stage, point, array, angle) {
+            // Get the current target coordinates
+            let x = array[stage][point].targetx;
+            let y = array[stage][point].targety;
+    
+            // Translate point to origin
+            let translatedX = x - center.x;
+            let translatedY = y - center.y;
+    
+            // Rotate point
+    
+            let rotatedX = translatedX * Math.cos(angle) - translatedY * Math.sin(angle);
+            let rotatedY = translatedX * Math.sin(angle) + translatedY * Math.cos(angle);
+    
+            // Translate point back
+            array[stage][point].targetx = rotatedX + center.x;
+            array[stage][point].targety = rotatedY + center.y;
+            array[stage][point].targetangle += p.degrees(angle);
+  }
+
+
+  rotateStage = function(stage, array, angle) {
+      for (let j = 0; j < array[stage].length; j++) {
+        rotatePoint(stage, j, array, angle)
+      }
+  }
 
   randRelChg = function(xRand, yRand, indices, low, hi, rel) {
       let change
@@ -549,7 +566,9 @@ let mainSketch = function(p) {
 
 
   applyRandomChanges = function(stage) {
-    for (let k=0; k< randPts.length; k++) {
+    // every point changed in here needs to be rotated
+    // no calculations should be make based on easyPointsHistory
+    for (let k=0; k<randPts.length; k++) {
       if (stage == randPts[k].stage) {
         let indices = randPts[k]
   
@@ -659,13 +678,7 @@ let mainSketch = function(p) {
                     case "xDir":
                       easyPointsHistory[i][j][which] = originalLocations[i][j][which] + p.map(xRand, indices.xBoundLow, indices.xBoundHi, indices.otherPt1Low, indices.otherPt1Hi)
                       break;
-                  
-                      break;
-                  }
-  
-  
-                easyPointsHistory[i][indices.otherPt1].targetx += 0 //mapped value either 
-                easyPointsHistory[i][indices.otherPt1].targety += 0 
+                    }
               }
             }
           }
@@ -901,6 +914,19 @@ let mainSketch = function(p) {
         }
       }
     }
+    //update rotated easyPointsHistory
+    easyPointsHistoryRotated = JSON.parse(JSON.stringify(easyPointsHistory))
+
+    for (let i = 0; i < easyPointsHistory.length-1; i++) { //length-1 because rotation was being applied twice to last item for some reason
+      rotateStage(i, easyPointsHistoryRotated, sketchAngle)
+    }
+  }
+
+
+  p.mouseClicked = function() {
+    sketch.remove();
+    progress = targetProgress
+    sketch = new p5(mainSketch, 'canvasContainer1');
   }
 
   // grab div with the id "sketch-section" and get its height
@@ -951,15 +977,15 @@ let mainSketch = function(p) {
 
       if(mode == "full"){
         if (passedIntervals+1) {
-          easyPoints = easyPointsHistory[nextInterval]
+          easyPoints = easyPointsHistoryRotated[nextInterval]
 
-          for (let i = 0; i < easyPointsHistory[nextInterval].length; i++) {
+          for (let i = 0; i < easyPointsHistoryRotated[nextInterval].length; i++) {
             let easedT = easeInOut(localT); // Apply easing function to localT
-            easyPoints[i].x = p.lerp(easyPointsHistory[nextInterval][i].targetx, easyPointsHistory[passedIntEZ][i].targetx, easedT);
-            easyPoints[i].y = p.lerp(easyPointsHistory[nextInterval][i].targety, easyPointsHistory[passedIntEZ][i].targety, easedT);
-            easyPoints[i].angle = p.lerp(easyPointsHistory[nextInterval][i].targetangle, easyPointsHistory[passedIntEZ][i].targetangle, easedT);
-            easyPoints[i].bez1 = p.lerp(easyPointsHistory[nextInterval][i].targetbez1, easyPointsHistory[passedIntEZ][i].targetbez1, easedT);
-            easyPoints[i].bez2 = p.lerp(easyPointsHistory[nextInterval][i].targetbez2, easyPointsHistory[passedIntEZ][i].targetbez2, easedT);
+            easyPoints[i].x = p.lerp(easyPointsHistoryRotated[nextInterval][i].targetx, easyPointsHistoryRotated[passedIntEZ][i].targetx, easedT);
+            easyPoints[i].y = p.lerp(easyPointsHistoryRotated[nextInterval][i].targety, easyPointsHistoryRotated[passedIntEZ][i].targety, easedT);
+            easyPoints[i].angle = p.lerp(easyPointsHistoryRotated[nextInterval][i].targetangle, easyPointsHistoryRotated[passedIntEZ][i].targetangle, easedT);
+            easyPoints[i].bez1 = p.lerp(easyPointsHistoryRotated[nextInterval][i].targetbez1, easyPointsHistoryRotated[passedIntEZ][i].targetbez1, easedT);
+            easyPoints[i].bez2 = p.lerp(easyPointsHistoryRotated[nextInterval][i].targetbez2, easyPointsHistoryRotated[passedIntEZ][i].targetbez2, easedT);
           }
         }
       }
@@ -1115,14 +1141,17 @@ let mainSketch = function(p) {
 
 
 
-new p5(mainSketch, 'canvasContainer1');
+let sketch = new p5(mainSketch, 'canvasContainer1');
 
 
 
 
 
 function easeInOut(t) {
-  return t < 0.5 ? 2 * t * t : -1 + (4 - 2 * t) * t;
+    // return -(Math.cos(Math.PI * t) - 1) / 2;
+    let a = -(Math.cos(Math.PI * t) - 1) / 2;
+    let b = (a+t)/2
+    return b
 }
 
 function drawSegment(i, p) {
