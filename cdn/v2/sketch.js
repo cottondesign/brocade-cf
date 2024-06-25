@@ -306,13 +306,15 @@ let mainSketch = function(p) {
 
 
   p.setup = function() {
-    vertexControlsButton = p.createButton('show/hide debug info');
-    vertexControlsButton.elt.style.position = "fixed";
-    vertexControlsButton.elt.style.top = "50lvh"
-    vertexControlsButton.elt.style.left = "10px"
-    vertexControlsButton.mousePressed(function() {
-      vertexControls = !vertexControls;
-    });
+    // vertexControlsButton = p.createButton('show/hide debug info');
+    // vertexControlsButton.elt.style.position = "fixed";
+    // vertexControlsButton.elt.style.top = "50lvh"
+    // vertexControlsButton.elt.style.left = "10px"
+    // vertexControlsButton.mousePressed(function() {
+    //   vertexControls = !vertexControls;
+    // });
+
+
     //for test #2
     // for(let i=0;i<numSides;i++) {
     //   colors.push([p.random(255),p.random(255),p.random(255)])
@@ -503,7 +505,7 @@ let mainSketch = function(p) {
     sketchAngle = debugging ? 0 : p.random(360);
     sketchAngle *= (Math.PI / 180);
     // sketchAngle = p.random(360) * (Math.PI / 180);
-    sketchAngle = 0
+    // sketchAngle = 0
 
     for (let i=0; i<easyPointsHistory.length; i++) {
       applyRandomChanges(i)

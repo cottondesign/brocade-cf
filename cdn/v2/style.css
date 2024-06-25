@@ -83,7 +83,7 @@ canvas {
 @media (max-aspect-ratio: 1/1) {
   #defaultCanvas0 {
     /* Your styles for portrait aspect ratio */
-		height: 120dvw;
+		height: 110dvw;
     width: auto;
   }
 }
@@ -91,7 +91,7 @@ canvas {
 @media (min-aspect-ratio: 1/1) {
 #defaultCanvas0 {
   /* Your styles for landscape aspect ratio */
-  height: 110dvh;
+  height: 120dvh;
   width: auto;
 }
 }
