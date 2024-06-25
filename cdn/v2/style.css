@@ -78,3 +78,20 @@ canvas {
 #cursorSketch {
   z-index: -5
 }
+
+
+@media (max-aspect-ratio: 1/1) {
+  #defaultCanvas0 {
+    /* Your styles for portrait aspect ratio */
+		height: 120dvw;
+    width: auto;
+  }
+}
+
+@media (min-aspect-ratio: 1/1) {
+#defaultCanvas0 {
+  /* Your styles for landscape aspect ratio */
+  height: 110dvh;
+  width: auto;
+}
+}

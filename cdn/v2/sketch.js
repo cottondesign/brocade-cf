@@ -28,7 +28,7 @@ let speedLimit = debugging ? .3 : 0.23;
 let easingFactor = .2
 
 
-// let strokeColor = "#F6F2E2"
+let strokeColor = "#F6F2E2"
 let moveList = []
 let colorthis = []
 let targetProgress = 0
@@ -321,9 +321,11 @@ let mainSketch = function(p) {
     width = (window.innerWidth > 800) ? p.min(window.innerWidth-200, 1400) : window.innerWidth;
     height = window.innerHeight;
     canvasSize = p.min(width, height)
-    canvasSize *= 1.1
+    canvasSize = (window.innerWidth > 800) ? canvasSize * 1.2 : canvasSize * 1.1
     canvas = p.createCanvas(canvasSize, canvasSize)
-    canvasDOM = document.querySelector('canvas')
+    canvas.elt.style.width = ''; // Remove the inline width style
+    canvas.elt.style.height = ''; // Remove the inline height style
+    canvas.elt.style.cursor = "pointer"
     canvas.style("-webkit-filter", `url("#svgfilter")`).style("filter", `url("#svgfilter")`);
     canvas.style('z-index', '50');
     // canvas.style('position', 'absolute');
@@ -950,14 +952,14 @@ let mainSketch = function(p) {
     newSketch()
   }
 
-  // p.keyPressed = function() {
-  //   if (p.key === "d") {
-  //     debugging = !debugging;
-  //     vertexControls = !vertexControls;
-  //     console.log("hi")
-  //     newSketch()
-  //   }
-  // }
+  p.keyPressed = function() {
+    if (p.key === "d") {
+      debugging = !debugging;
+      vertexControls = !vertexControls;
+      console.log("hi")
+      newSketch()
+    }
+  }
 
   // grab div with the id "sketch-section" and get its height
   let sketchSection = document.getElementById("sketch-section");
@@ -1199,7 +1201,7 @@ function drawSegments(p, start, end) {
     for (let j = 0; j < easyPoints.length; j++) {
       if (easyPoints[j].zIndex == i) {
         p.strokeCap(p.SQUARE)
-        p.stroke(246, 242, 226, opacity*255)
+        p.stroke(strokeColor)
         p.strokeWeight(canvasSize/140 + 6)
         drawSegment(j, p)
         p.stroke(bgColor)
@@ -1217,33 +1219,31 @@ function newSketch() {
   sketch = new p5(mainSketch, 'canvasContainer1');
 }
 
-(function() {
-  let resizeTimeout;
-  let lastInnerWidth = window.innerWidth;
-  let lastInnerHeight = window.innerHeight;
+// (function() {
+//   let resizeTimeout;
+//   let lastInnerWidth = window.innerWidth;
+//   let lastInnerHeight = window.innerHeight;
 
-  window.addEventListener('resize', function() {
-      // Clear the previous timeout
-      clearTimeout(resizeTimeout);
+//   window.addEventListener('resize', function() {
+//       // Clear the previous timeout
+//       clearTimeout(resizeTimeout);
       
-      // Set a new timeout
-      resizeTimeout = setTimeout(function() {
-          const innerWidth = window.innerWidth;
-          const innerHeight = window.innerHeight;
+//       // Set a new timeout
+//       resizeTimeout = setTimeout(function() {
+//           const innerWidth = window.innerWidth;
+//           const innerHeight = window.innerHeight;
           
-          // Check if the change in dimensions is significant (e.g., more than 100px)
-          if (Math.abs(innerWidth - lastInnerWidth) > 100 || Math.abs(innerHeight - lastInnerHeight) > 170) {
-              // Update last known dimensions
-              lastInnerWidth = innerWidth;
-              lastInnerHeight = innerHeight;
+//           // Check if the change in dimensions is significant (e.g., more than 100px)
+//           if (Math.abs(innerWidth - lastInnerWidth) > 100 || Math.abs(innerHeight - lastInnerHeight) > 170) {
+//               // Update last known dimensions
+//               lastInnerWidth = innerWidth;
+//               lastInnerHeight = innerHeight;
 
-              // Your resize logic here
-              sketch.remove();
-              sketch = new p5(mainSketch, 'canvasContainer1');
-          }
-      }, 100); // Debounce timeout in milliseconds
-  });
-})();
+//               newSketch()
+//           }
+//       }, 100); // Debounce timeout in milliseconds
+//   });
+// })();
 
 
 
