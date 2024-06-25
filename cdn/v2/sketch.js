@@ -492,7 +492,7 @@ let mainSketch = function(p) {
     sketchAngle = debugging ? 0 : p.random(360);
     sketchAngle *= (Math.PI / 180);
     // sketchAngle = p.random(360) * (Math.PI / 180);
-    sketchAngle = 0
+    // sketchAngle = 0
 
     for (let i=0; i<easyPointsHistory.length; i++) {
       applyRandomChanges(i)
