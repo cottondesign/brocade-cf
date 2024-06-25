@@ -56,6 +56,10 @@ canvas {
   justify-content: center;
 }
 
+#sketch-holder {
+  margin-top: -200px;
+}
+
 #sketch-holder-2 {
   z-index:-10;
 }

@@ -10,6 +10,8 @@ let randSpots = {
   all:[],
   rand:[]
 }
+let canvas
+let canvasDOM
 
 let test = [0,0,0,0,0,0,0,0]
 let test2 = [0,0,0,0,0,0,0,0]
@@ -26,7 +28,7 @@ let speedLimit = debugging ? .3 : 0.23;
 let easingFactor = .2
 
 
-let strokeColor = "#F6F2E2"
+// let strokeColor = "#F6F2E2"
 let moveList = []
 let colorthis = []
 let targetProgress = 0
@@ -40,6 +42,7 @@ let originalLocations = [];
 let canvasSize
 let heightChg = .85
 let opacity = 0
+let alpha
 let sketchAngle = 0
 
 
@@ -267,7 +270,7 @@ let culprit = [
 ]
 
 
-// subtract 10 from all the x values in the segments in culprit[0] at all indices
+// manually center shapes that were off-center
 for(let i=5;i<culprit[0].length;i++) {
   for(let j=0;j<culprit[0][i].length;j++) {
     for(let k=0;k<culprit[0][i][j].segment.length;k+=2) {
@@ -320,6 +323,7 @@ let mainSketch = function(p) {
     canvasSize = p.min(width, height)
     canvasSize *= 1.1
     canvas = p.createCanvas(canvasSize, canvasSize)
+    canvasDOM = document.querySelector('canvas')
     canvas.style("-webkit-filter", `url("#svgfilter")`).style("filter", `url("#svgfilter")`);
     canvas.style('z-index', '50');
     // canvas.style('position', 'absolute');
@@ -441,10 +445,11 @@ let mainSketch = function(p) {
         otherPt1: 0, thisState1: "xHi", otherState1: "xHi", otherMoveMax1: p.height*.9, otherPt1Which: "targetbez1"  //not working
       },
       {stage:11, point:0, xBoundLow: -p.height*.2, xBoundHi: p.height*.02, yBoundLow: -p.height*.3, yBoundHi: p.height*.01,
-        bez2Hi: p.height*.05, bez2Low: -p.height*.2, bez2Rel: "yDir",
+        bez2Hi: -p.height*.2, bez2Low: -p.height*.2, bez2Rel: "yDir",
         bez1Hi: p.height*.3, bez1Low: -p.height*.08, bez1Rel: "xInv",
-        angleLow: -30, angleHi: 90, angleRel: "yInv",
-        otherPt1: 11, thisState1: "yLow", otherState1: "yHi", otherMoveMax1: -p.height*.1, otherPt1Which: "targety"
+        angleLow: -20, angleHi: 80, angleRel: "yInv",
+        otherPt1: 11, thisState1: "yLow", otherState1: "yHi", otherMoveMax1: -p.height*.1, otherPt1Which: "targety",
+        stopStage: 7
       },
       {stage:9,point:9, xBoundLow: -p.height*.01, xBoundHi: p.height*.06, yBoundLow: -p.height*.1, yBoundHi: p.height*.06, onlyOne: true,
         angleLow: -30, angleHi: 50, angleRel: "yInv",
@@ -459,12 +464,21 @@ let mainSketch = function(p) {
         angleLow: -60, angleHi: 20, angleRel: "xDir",
         onlyOne: true
       },
+      {stage:7, point:6, xBoundLow: -p.height*.1, xBoundHi: p.height*.25, yBoundLow: -p.height*.1, yBoundHi: p.height*.1,
+      angleLow: 0, angleHi: -40, angleRel: "xDir",
+      bez1Hi: p.height*.2, bez1Low: -p.height*.001, bez2Rel: "xDir",
+      onlyOne: true,
+      },
       {stage:7, point:1, xBoundLow: -p.height*.05, xBoundHi: p.height*.06, yBoundLow: -p.height*.06, yBoundHi: p.height*.06,
         roundOut: "prev", roundDist: p.height*.2, bezAdjust: .25
       },
       {stage:7, point:8, xBoundLow: -p.height*.03, xBoundHi: p.height*.03, yBoundLow: -p.height*.2, yBoundHi: p.height*.05},
       // {stage:3, point:1, xBoundLow: -p.height*.06, xBoundHi: p.height*.06, yBoundLow: -p.height*.06, yBoundHi: p.height*.06},
-      {stage:5, point:5, xBoundLow: -p.height*.002, xBoundHi: p.height*.1, yBoundLow: -p.height*.1, yBoundHi: p.height*.1, onlyOne: true,},
+      {stage:5, point:5, xBoundLow: -p.height*.002, xBoundHi: p.height*.1, yBoundLow: -p.height*.1, yBoundHi: p.height*.03, onlyOne: true,},
+      {stage:5, point:0, xBoundLow: -p.height*.2, xBoundHi: p.height*.05, yBoundLow: -p.height*.2, yBoundHi: p.height*.1,
+        angleLow: 0, angleHi: 90, angleRel: "yInv",
+        bez2Hi: p.height*.001, bez2Low: -p.height*.3, bez2Rel: "yDir",
+      onlyOne: true,},
       {stage:3, point:0, xBoundLow: -p.height*.1, xBoundHi: p.height*.4, yBoundLow: -p.height*.2, yBoundHi: p.height*.1},
       {stage:2, point:0, xBoundLow: -p.height*.3, xBoundHi: p.height*.01, yBoundLow: -p.height*.1, yBoundHi: p.height*.1,
         angleLow: -60, angleHi: 1, angleRel: "xDir"
@@ -478,7 +492,7 @@ let mainSketch = function(p) {
     sketchAngle = debugging ? 0 : p.random(360);
     sketchAngle *= (Math.PI / 180);
     // sketchAngle = p.random(360) * (Math.PI / 180);
-    // sketchAngle = 0
+    sketchAngle = 0
 
     for (let i=0; i<easyPointsHistory.length; i++) {
       applyRandomChanges(i)
@@ -933,17 +947,24 @@ let mainSketch = function(p) {
 
 
   p.mouseClicked = function() {
-    sketch.remove();
-    progress = targetProgress
-    sketch = new p5(mainSketch, 'canvasContainer1');
+    newSketch()
   }
+
+  // p.keyPressed = function() {
+  //   if (p.key === "d") {
+  //     debugging = !debugging;
+  //     vertexControls = !vertexControls;
+  //     console.log("hi")
+  //     newSketch()
+  //   }
+  // }
 
   // grab div with the id "sketch-section" and get its height
   let sketchSection = document.getElementById("sketch-section");
-  let sketchHeight = sketchSection.offsetHeight - window.innerHeight;
+  // 0.9 so you finish unraveling a bit before reaching the next section
+  let sketchHeight = (sketchSection.offsetHeight * 0.85) - window.innerHeight;
 
   p.draw = function() {
-
 
     scrollHeight = document.documentElement.scrollHeight - window.innerHeight-0;
     interval = scrollHeight / numTangles;
@@ -1091,13 +1112,14 @@ let mainSketch = function(p) {
                   }
                   if (indices.otherPt1) {
                     //not working
-                    p.stroke(200,0,200)
-                    which = indices.otherPt1
-                    p.strokeWeight(2)
-                    p.circle(easyPoints[which].x, easyPoints[which].y, 12)
-                    console.log("PURPLE")
+                    // p.stroke(200,0,200)
+                    // which = indices.otherPt1
+                    // console.log("which",which,"indices.point",indices.point)
+                    // p.strokeWeight(2)
+                    // p.circle(easyPoints[which].x, easyPoints[which].y, 12)
+                    // console.log("PURPLE")
                   }
-                  p.text("i"+which+"\nz"+easyPoints[which].zIndex, easyPoints[which].x, easyPoints[which].y)
+                  // p.text("i"+which+"\nz"+easyPoints[which].zIndex, easyPoints[which].x, easyPoints[which].y)
                 }
               }
             }
@@ -1133,16 +1155,17 @@ let mainSketch = function(p) {
 
 
             p.fill(255,0,0)
-            p.text("Start"+nextInterval+"\nEnd"+passedIntEZ, 10,20)
+            p.text("Start"+nextInterval+"\nEnd"+passedIntEZ, 10,80)
             p.noFill()
             p.stroke(0)
       }
 
 
     }
-    let alpha = p.max(0, 1-opacity)
-    p.background(23, 28, 49, alpha*255)
+    alpha = p.max(0, 1-opacity)
+    // p.background(23, 28, 49, alpha*255)
     opacity += .15
+    opacity = p.min(1, opacity)
 
   }
 
@@ -1176,7 +1199,7 @@ function drawSegments(p, start, end) {
     for (let j = 0; j < easyPoints.length; j++) {
       if (easyPoints[j].zIndex == i) {
         p.strokeCap(p.SQUARE)
-        p.stroke(strokeColor)
+        p.stroke(246, 242, 226, opacity*255)
         p.strokeWeight(canvasSize/140 + 6)
         drawSegment(j, p)
         p.stroke(bgColor)
@@ -1186,6 +1209,12 @@ function drawSegments(p, start, end) {
       }
     }
   }
+}
+
+function newSketch() {
+  sketch.remove();
+  progress = targetProgress
+  sketch = new p5(mainSketch, 'canvasContainer1');
 }
 
 (function() {
@@ -1203,7 +1232,7 @@ function drawSegments(p, start, end) {
           const innerHeight = window.innerHeight;
           
           // Check if the change in dimensions is significant (e.g., more than 100px)
-          if (Math.abs(innerWidth - lastInnerWidth) > 100 || Math.abs(innerHeight - lastInnerHeight) > 100) {
+          if (Math.abs(innerWidth - lastInnerWidth) > 100 || Math.abs(innerHeight - lastInnerHeight) > 170) {
               // Update last known dimensions
               lastInnerWidth = innerWidth;
               lastInnerHeight = innerHeight;
