@@ -306,6 +306,13 @@ let mainSketch = function(p) {
 
 
   p.setup = function() {
+    vertexControlsButton = p.createButton('show/hide debug info');
+    vertexControlsButton.elt.style.position = "fixed";
+    vertexControlsButton.elt.style.top = "50lvh"
+    vertexControlsButton.elt.style.left = "10px"
+    vertexControlsButton.mousePressed(function() {
+      vertexControls = !vertexControls;
+    });
     //for test #2
     // for(let i=0;i<numSides;i++) {
     //   colors.push([p.random(255),p.random(255),p.random(255)])
@@ -330,6 +337,7 @@ let mainSketch = function(p) {
     canvas.style('z-index', '50');
     // canvas.style('position', 'absolute');
     canvas.parent('sketch-holder');
+    canvas.mouseClicked(newSketch)
     center = {x:p.width/2, y:p.height/2}
     p.width *= .6
     p.height *= heightChg
@@ -401,11 +409,12 @@ let mainSketch = function(p) {
         otherPt1: 2, thisState1: "yLow", otherState1: "xHi", otherMoveMax1: -p.height*.1, otherPt1Which: "targetx"
 
       },
-      {stage:11,point:11, xBoundLow: -p.height*.01, xBoundHi: p.height*.06, yBoundLow: -p.height*.2, yBoundHi: p.height*.06, onlyOne: true,
+      {stage:11,point:11, xBoundLow: -p.height*.01, xBoundHi: p.height*.06, yBoundLow: -p.height*.1, yBoundHi: p.height*.06,
+        onlyOne: true,
         angleLow: -30, angleHi: 100, angleRel: "yInv",
         bez2Hi: p.height*.02, bez2Low: -p.height*.001, bez2Rel: "yInv",
         // roundOut: "next", roundDist: p.height*.3, bezAdjust: .25,
-        otherPt1: 10, thisState1: "yHi", otherState1: "yLow", otherMoveMax1: -p.height*.2, otherPt1Which: "targetbez1"
+        otherPt1: 10, thisState1: "yHi", otherState1: "yLow", otherMoveMax1: -p.height*.17, otherPt1Which: "targetbez1"
       },
       {stage:11,point:10, xBoundLow: -p.height*.06, xBoundHi: p.height*.06, yBoundLow: -p.height*.13, yBoundHi: p.height*.06,  //WORK HERE
         bez1Hi: p.height*.1, bez1Low: -p.height*.01, bez1Rel: "yInv",
@@ -436,7 +445,7 @@ let mainSketch = function(p) {
       {stage:11,point:4, xBoundLow: -p.height*.02, xBoundHi: p.height*.02, yBoundLow: p.height*.08, yBoundHi: p.height*.23, onlyOne: true,
         bez1Hi: p.height*.2, bez1Low: -p.height*.01, bez1Rel: "yInv",
       },
-      {stage:11,point:3, xBoundLow: -p.height*.02, xBoundHi: p.height*.02, yBoundLow: -p.height*.1, yBoundHi: p.height*.15},
+      {stage:11,point:3, xBoundLow: -p.height*.02, xBoundHi: p.height*.02, yBoundLow: -p.height*.03, yBoundHi: p.height*.15},
       {stage:11,point:2, xBoundLow: -p.height*.1, xBoundHi: p.height*0.01, yBoundLow: -p.height*.1, yBoundHi: p.height*0.01,
         bez1Hi: p.height*.1, bez1Low: -p.height*.01, bez1Rel: "xInv",
         bez2Hi: p.height*.07, bez2Low: -p.height*.01, bez2Rel: "xDir",
@@ -448,9 +457,9 @@ let mainSketch = function(p) {
       },
       {stage:11, point:0, xBoundLow: -p.height*.2, xBoundHi: p.height*.02, yBoundLow: -p.height*.3, yBoundHi: p.height*.01,
         bez2Hi: -p.height*.2, bez2Low: -p.height*.2, bez2Rel: "yDir",
-        bez1Hi: p.height*.3, bez1Low: -p.height*.08, bez1Rel: "xInv",
+        bez1Hi: p.height*.5, bez1Low: -p.height*.08, bez1Rel: "xInv",
         angleLow: -20, angleHi: 80, angleRel: "yInv",
-        otherPt1: 11, thisState1: "yLow", otherState1: "yHi", otherMoveMax1: -p.height*.1, otherPt1Which: "targety",
+        otherPt1: 11, thisState1: "yLow", otherState1: "yHi", otherMoveMax1: -p.height*.13, otherPt1Which: "targety",
         stopStage: 7
       },
       {stage:9,point:9, xBoundLow: -p.height*.01, xBoundHi: p.height*.06, yBoundLow: -p.height*.1, yBoundHi: p.height*.06, onlyOne: true,
@@ -471,7 +480,7 @@ let mainSketch = function(p) {
       bez1Hi: p.height*.2, bez1Low: -p.height*.001, bez2Rel: "xDir",
       onlyOne: true,
       },
-      {stage:7, point:1, xBoundLow: -p.height*.05, xBoundHi: p.height*.06, yBoundLow: -p.height*.06, yBoundHi: p.height*.06,
+      {stage:7, point:1, xBoundLow: -p.height*.001, xBoundHi: p.height*.06, yBoundLow: -p.height*.06, yBoundHi: p.height*.06,
         roundOut: "prev", roundDist: p.height*.2, bezAdjust: .25
       },
       {stage:7, point:8, xBoundLow: -p.height*.03, xBoundHi: p.height*.03, yBoundLow: -p.height*.2, yBoundHi: p.height*.05},
@@ -494,7 +503,7 @@ let mainSketch = function(p) {
     sketchAngle = debugging ? 0 : p.random(360);
     sketchAngle *= (Math.PI / 180);
     // sketchAngle = p.random(360) * (Math.PI / 180);
-    // sketchAngle = 0
+    sketchAngle = 0
 
     for (let i=0; i<easyPointsHistory.length; i++) {
       applyRandomChanges(i)
@@ -948,18 +957,16 @@ let mainSketch = function(p) {
   }
 
 
-  p.mouseClicked = function() {
-    newSketch()
-  }
 
-  p.keyPressed = function() {
-    if (p.key === "d") {
-      debugging = !debugging;
-      vertexControls = !vertexControls;
-      console.log("hi")
-      newSketch()
-    }
-  }
+
+  // p.keyPressed = function() {
+  //   if (p.key === "d") {
+  //     debugging = !debugging;
+  //     vertexControls = !vertexControls;
+  //     console.log("hi")
+  //     newSketch()
+  //   }
+  // }
 
   // grab div with the id "sketch-section" and get its height
   let sketchSection = document.getElementById("sketch-section");
@@ -1103,7 +1110,7 @@ let mainSketch = function(p) {
                   // console.log(indices.stage,indices.point)
                   if (indices.roundOut == "next") {
                     which = (indices.point+1)%easyPoints.length
-                    p.stroke(0,255,0)
+                    p.stroke(0,255,0) // green = roundout
                     p.strokeWeight(2)
                     p.circle(easyPoints[which].x, easyPoints[which].y, 12)
                   } else if (indices.roundOut == "prev") {
@@ -1113,13 +1120,13 @@ let mainSketch = function(p) {
                     p.circle(easyPoints[which].x, easyPoints[which].y, 12)
                   }
                   if (indices.otherPt1) {
-                    //not working
+                    // not really working - shut off if erroring while showing debug info
                     // p.stroke(200,0,200)
                     // which = indices.otherPt1
-                    // console.log("which",which,"indices.point",indices.point)
+                    // // console.log("which",which,"indices.point",indices.point)
                     // p.strokeWeight(2)
-                    // p.circle(easyPoints[which].x, easyPoints[which].y, 12)
-                    // console.log("PURPLE")
+                    // p.circle(easyPoints[which].x, easyPoints[which].y, 28)
+                    // // console.log("PURPLE")
                   }
                   // p.text("i"+which+"\nz"+easyPoints[which].zIndex, easyPoints[which].x, easyPoints[which].y)
                 }
@@ -1141,9 +1148,9 @@ let mainSketch = function(p) {
                     which = (indices.point-1+easyPoints.length)%easyPoints.length
                   }
                   // p.text("i"+which+"\nz"+easyPoints[which].zIndex, easyPoints[which].x, easyPoints[which].y)
-                  p.stroke(0,255,255)
-                  p.strokeWeight(3)
-                  p.circle(easyPoints[j].x, easyPoints[j].y, 12)
+                  p.stroke(200,255,0) // yellow = roundout
+                  p.strokeWeight(2)
+                  p.circle(easyPoints[j].x, easyPoints[j].y, 20)
                 }
               }
             }
