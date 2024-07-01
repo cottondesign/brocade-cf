@@ -24,7 +24,7 @@ let numSides = Math.floor(Math.random()*2)+7
 
 let debugging = false
 let vertexControls = debugging ? true : false;
-let speedLimit = debugging ? .3 : 0.23;
+let speedLimit = debugging ? .3 : 0.05;
 let easingFactor = .2
 
 
@@ -40,7 +40,8 @@ let numTangles
 let randPts = []
 let originalLocations = [];
 let canvasSize
-let heightChg = .85
+const widthChg = .6
+const heightChg = .85
 let opacity = 0
 let alpha
 let sketchAngle = 0
@@ -49,6 +50,7 @@ let sketchAngle = 0
 //for test #2
 let colors = []
 let yes=0
+let cursor
 
 
 
@@ -281,22 +283,22 @@ for(let i=5;i<culprit[0].length;i++) {
 
 
 
-string = `<div id="svg-container">
-        <svg xmlns="http://www.w3.org/2000/svg" version="1.1">
-          <defs>
-            <filter id="svgfilter" color-interpolation-filters="sRGB" type="matrix" x="0%", y="0%" width="100%" and height="100%">
-              <!-- <feTurbulence type="turbulence" baseFrequency=".7" numOctaves="1" result="turbulence" /> -->
-              <feTurbulence type="turbulence" baseFrequency=".1" numOctaves="5" result="turbulence" />
-              <!-- <feDisplacementMap in2="turbulence" in="SourceGraphic" scale="5" xChannelSelector="R" yChannelSelector="G" /> -->
-              <feDisplacementMap in2="turbulence" in="SourceGraphic" scale="2" xChannelSelector="R" yChannelSelector="G" />
-            </filter>
-          </defs>
-        </svg>
-      </div>`
+// string = `<div id="svg-container">
+//         <svg xmlns="http://www.w3.org/2000/svg" version="1.1">
+//           <defs>
+//             <filter id="svgfilter" color-interpolation-filters="sRGB" type="matrix" x="0%", y="0%" width="100%" and height="100%">
+//               <!-- <feTurbulence type="turbulence" baseFrequency=".7" numOctaves="1" result="turbulence" /> -->
+//               <feTurbulence type="turbulence" baseFrequency=".1" numOctaves="5" result="turbulence" />
+//               <!-- <feDisplacementMap in2="turbulence" in="SourceGraphic" scale="5" xChannelSelector="R" yChannelSelector="G" /> -->
+//               <feDisplacementMap in2="turbulence" in="SourceGraphic" scale="2" xChannelSelector="R" yChannelSelector="G" />
+//             </filter>
+//           </defs>
+//         </svg>
+//       </div>`
 
-// append string to div with id sketch-holder
-document.getElementById("sketch-holder").innerHTML += string;
-document.getElementById("svg-container").style.position = "absolute";
+// // append string to div with id sketch-holder
+// document.getElementById("sketch-holder").innerHTML += string;
+// document.getElementById("svg-container").style.position = "absolute";
 
 
 
@@ -334,18 +336,18 @@ let mainSketch = function(p) {
     canvas = p.createCanvas(canvasSize, canvasSize)
     canvas.elt.style.width = ''; // Remove the inline width style
     canvas.elt.style.height = ''; // Remove the inline height style
-    canvas.elt.style.cursor = "pointer"
-    canvas.style("-webkit-filter", `url("#svgfilter")`).style("filter", `url("#svgfilter")`);
+    canvas.elt.style.cursor = "none"
+    // canvas.style("-webkit-filter", `url("#svgfilter")`).style("filter", `url("#svgfilter")`);
     canvas.style('z-index', '50');
     // canvas.style('position', 'absolute');
     canvas.parent('sketch-holder');
     canvas.mouseClicked(newSketch)
     center = {x:p.width/2, y:p.height/2}
-    p.width *= .6
+    p.width *= widthChg
     p.height *= heightChg
     p.noFill();
-    p.frameRate(10);
-    // cursor = p.loadImage("cursor.png")
+    p.frameRate(60);
+    cursor = p.loadImage("https://uploads-ssl.webflow.com/660461e60c71a61eb9395dc9/6683206a43b36073ba767cff_cursor-pointer-icon-1907x2048-0ifemj1z.png")
 
     // document.getElementById("sides").innerHTML += numSides
     easyPointsHistory = []
@@ -1014,7 +1016,7 @@ let mainSketch = function(p) {
 
 
     // --------------- update coordinates for motion
-    if (p.frameCount%1 == 0){
+    if (p.frameCount%5 == 0){
 
       if(mode == "full"){
         if (passedIntervals+1) {
@@ -1191,10 +1193,10 @@ let sketch = new p5(mainSketch, 'canvasContainer1');
 
 
 function easeInOut(t) {
-    // return -(Math.cos(Math.PI * t) - 1) / 2;
-    let a = -(Math.cos(Math.PI * t) - 1) / 2;
-    let b = (a+t)/2
-    return b
+  // return -(Math.cos(Math.PI * t) - 1) / 2;
+  let a = -(Math.cos(Math.PI * t) - 1) / 2;
+  let b = (a+t)/2
+  return b
 }
 
 function drawSegment(i, p) {
@@ -1217,6 +1219,11 @@ function drawSegments(p, start, end) {
         // stroke(colors[easyPoints[j].grp])
         p.strokeWeight(canvasSize/280 + 3)
         drawSegment(j, p)
+      }
+      if (i == 4) {
+        let unscaledMouseX = p.mouseX / widthChg;
+        let unscaledMouseY = p.mouseY / heightChg;
+        p.image(cursor, unscaledMouseX, unscaledMouseY, 18,20)
       }
     }
   }
