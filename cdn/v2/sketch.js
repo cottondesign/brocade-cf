@@ -51,6 +51,9 @@ let sketchAngle = 0
 let colors = []
 let yes=0
 let cursor
+let prevMouseY
+let scrollAccumulate = 0
+let prevTop
 
 
 
@@ -348,6 +351,15 @@ let mainSketch = function(p) {
     p.noFill();
     p.frameRate(60);
     cursor = p.loadImage("https://uploads-ssl.webflow.com/660461e60c71a61eb9395dc9/6683206a43b36073ba767cff_cursor-pointer-icon-1907x2048-0ifemj1z.png")
+
+    prevTop = canvas.elt.getBoundingClientRect().top;
+    window.addEventListener('wheel', function(event) {
+      let distanceToTop = canvas.elt.getBoundingClientRect().top;
+      let diff = prevTop - distanceToTop
+      scrollAccumulate += diff
+      prevTop = distanceToTop
+    });
+
 
     // document.getElementById("sides").innerHTML += numSides
     easyPointsHistory = []
@@ -1220,10 +1232,15 @@ function drawSegments(p, start, end) {
         p.strokeWeight(canvasSize/280 + 3)
         drawSegment(j, p)
       }
-      if (i == 4) {
+      if (i == Math.floor(easyPoints.length/3)) {
+        if (prevMouseY != p.mouseY) {
+          scrollAccumulate = 0
+        }
         let unscaledMouseX = p.mouseX / widthChg;
-        let unscaledMouseY = p.mouseY / heightChg;
+        let unscaledMouseY = p.mouseY / heightChg + scrollAccumulate;
+        console.log("scrollAccumulate",scrollAccumulate)
         p.image(cursor, unscaledMouseX, unscaledMouseY, 18,20)
+        prevMouseY = p.mouseY
       }
     }
   }
