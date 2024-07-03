@@ -1028,7 +1028,7 @@ let mainSketch = function(p) {
 
 
     // --------------- update coordinates for motion
-    if (p.frameCount%5 == 0){
+    if (p.frameCount%5 == 0 || p.frameCount < 5){
 
       if(mode == "full"){
         if (passedIntervals+1) {
@@ -1238,7 +1238,7 @@ function drawSegments(p, start, end) {
         }
         let unscaledMouseX = p.mouseX / widthChg;
         let unscaledMouseY = p.mouseY / heightChg + scrollAccumulate;
-        console.log("scrollAccumulate",scrollAccumulate)
+        // console.log("scrollAccumulate",scrollAccumulate)
         p.image(cursor, unscaledMouseX, unscaledMouseY, 18,20)
         prevMouseY = p.mouseY
       }
