@@ -54,6 +54,8 @@ let cursor
 let prevMouseY
 let scrollAccumulate = 0
 let prevTop
+let mouseXglobal
+let mouseYglobal
 
 
 
@@ -990,6 +992,10 @@ let mainSketch = function(p) {
   let sketchHeight = (sketchSection.offsetHeight * 0.85) - window.innerHeight;
 
   p.draw = function() {
+    if(p.mouseX != 0) {
+      mouseXglobal = p.mouseX
+      mouseYglobal = p.mouseY
+    }
 
     scrollHeight = document.documentElement.scrollHeight - window.innerHeight-0;
     interval = scrollHeight / numTangles;
@@ -1232,12 +1238,12 @@ function drawSegments(p, start, end) {
         p.strokeWeight(canvasSize/280 + 3)
         drawSegment(j, p)
       }
-      if (i == Math.floor(easyPoints.length/3) && !isTouchDevice()) {
+      if (i == Math.floor(easyPoints.length/3) && !isTouchDevice() && mouseXglobal != undefined) {
         if (prevMouseY != p.mouseY) {
           scrollAccumulate = 0
         }
-        let unscaledMouseX = p.mouseX / widthChg;
-        let unscaledMouseY = p.mouseY / heightChg + scrollAccumulate;
+        let unscaledMouseX = mouseXglobal / widthChg;
+        let unscaledMouseY = mouseYglobal / heightChg + scrollAccumulate;
         // console.log("scrollAccumulate",scrollAccumulate)
         p.image(cursor, unscaledMouseX, unscaledMouseY, 18,20)
         prevMouseY = p.mouseY
