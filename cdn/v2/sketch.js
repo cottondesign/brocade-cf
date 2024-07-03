@@ -1232,7 +1232,7 @@ function drawSegments(p, start, end) {
         p.strokeWeight(canvasSize/280 + 3)
         drawSegment(j, p)
       }
-      if (i == Math.floor(easyPoints.length/3)) {
+      if (i == Math.floor(easyPoints.length/3) && !isTouchDevice()) {
         if (prevMouseY != p.mouseY) {
           scrollAccumulate = 0
         }
@@ -1306,3 +1306,8 @@ function newSketch() {
 
 // // make changeNavColor run on scroll
 // window.addEventListener("scroll", changeNavColor);
+
+
+function isTouchDevice() {
+  return 'ontouchstart' in window || navigator.maxTouchPoints > 0;
+}
