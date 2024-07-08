@@ -56,6 +56,7 @@ let scrollAccumulate = 0
 let prevTop
 let mouseXglobal
 let mouseYglobal
+let cursorOverElementsVar = false
 
 
 
@@ -1238,7 +1239,7 @@ function drawSegments(p, start, end) {
         p.strokeWeight(canvasSize/280 + 3)
         drawSegment(j, p)
       }
-      if (i == Math.floor(easyPoints.length/3) && !isTouchDevice() && mouseXglobal != undefined) {
+      if (i == Math.floor(easyPoints.length/3) && !isTouchDevice() && mouseXglobal != undefined && !cursorOverElementsVar) {
         if (prevMouseY != p.mouseY) {
           scrollAccumulate = 0
         }
@@ -1317,3 +1318,32 @@ function newSketch() {
 function isTouchDevice() {
   return 'ontouchstart' in window || navigator.maxTouchPoints > 0;
 }
+
+function isCursorOverElements(event) {
+  const elements = ["2nd-header", "home-title"];
+  return elements.some(id => {
+      const element = document.getElementById(id);
+      if (!element) return false;
+
+      const rect = element.getBoundingClientRect();
+      const x = event.clientX;
+      const y = event.clientY;
+
+      return (
+          x >= rect.left &&
+          x <= rect.right &&
+          y >= rect.top &&
+          y <= rect.bottom
+      );
+  });
+}
+
+
+
+document.addEventListener("mousemove", (event) => {
+  if (isCursorOverElements(event)) {
+      cursorOverElementsVar = true;
+  } else {
+      cursorOverElementsVar = false;
+  }
+});

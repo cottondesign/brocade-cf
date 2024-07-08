@@ -39,6 +39,11 @@ canvas {
   font-size: 5vw;
   color: white;
 }
+.dummyTop {
+  color: white;
+  font-size: 3vw;
+  width: 33%;
+}
 
 @media (max-width: 768px) {
   .dummy {
@@ -58,6 +63,7 @@ canvas {
 
 #sketch-holder {
   margin-top: -200px;
+  z-index:-10;
 }
 
 #sketch-holder-2 {
