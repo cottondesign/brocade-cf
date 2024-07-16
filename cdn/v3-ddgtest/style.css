@@ -1,0 +1,103 @@
+html, body {
+  margin: 0;
+  padding: 0;
+}
+
+body {
+ background-color: #171C31;
+ color: #171C31;
+}
+
+canvas {
+  display: block;
+  /* cursor: none; */
+}
+
+#sketch-section {
+  height: 250lvh;
+}
+
+#buttons-container {
+  display: flex;
+  flex-direction: column;
+  margin-right: 20px;
+  position: fixed;
+  width: 200px;
+  height: 95vh;
+  top: 20px;
+  left: 20px;
+  /* background: #fff; */
+  z-index: 10;
+  justify-content: start;
+}
+
+.topMarginButton {
+  margin-top: 12px;
+}
+
+.dummy {
+  font-size: 5vw;
+  color: white;
+}
+.dummyTop {
+  color: white;
+  font-size: 3vw;
+  width: 33%;
+}
+
+@media (max-width: 768px) {
+  .dummy {
+    font-size: 8vw;
+  }
+}
+
+#sketch-holder, #sketch-holder-2, #sketch-holder-3 {
+  position: sticky;
+  top: 0px;
+  height: 100vh;
+  width: 100vw;
+  display:flex;
+  align-items: center;
+  justify-content: center;
+}
+
+#sketch-holder {
+  margin-top: -200px;
+  z-index:-10;
+}
+
+#sketch-holder-2 {
+  z-index:-10;
+}
+
+#sketch-holder-3 {
+  z-index:-5;
+}
+
+#svg-container {
+  display: none;
+}
+
+#btmSketch {
+  /* z-index:-10 */
+}
+#cursorSketch {
+  z-index: -5
+}
+
+
+@media (max-aspect-ratio: 1/1) {
+  #defaultCanvas0 {
+    /* Your styles for portrait aspect ratio */
+		height: 110dvw;
+    width: auto;
+  }
+}
+
+@media (min-aspect-ratio: 1/1) {
+#defaultCanvas0 {
+  /* Your styles for landscape aspect ratio */
+  height: 120dvh;
+  width: auto;
+}
+}
