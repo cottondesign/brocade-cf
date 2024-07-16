@@ -320,6 +320,7 @@ let mainSketch = function(p) {
 
 
   p.setup = function() {
+    // Override the default console.log function
     const originalConsoleLog = console.log;
     console.log = function(message) {
       logs.push(message);
@@ -327,6 +328,19 @@ let mainSketch = function(p) {
         logs.shift();
       }
       originalConsoleLog.apply(console, arguments);
+      updateLogElement();
+    };
+
+    // Example of capturing errors
+    window.onerror = function(message, source, lineno, colno, error) {
+      let errorMsg = "Error: " + message + " at line: " + lineno + ":" + colno;
+      logs.push(errorMsg);
+      if (logs.length > 20) { // Keep only the last 20 logs
+        logs.shift();
+      }
+      // Ensure the error is also logged to the console
+      originalConsoleLog(errorMsg);
+      updateLogElement();
     };
     // vertexControlsButton = p.createButton('show/hide debug info');
     // vertexControlsButton.elt.style.position = "fixed";
@@ -1222,12 +1236,14 @@ let mainSketch = function(p) {
     // Log values
   
   
-    // Display logs on canvas
-    p.textSize(12);
-    p.fill(255);
-    for (let i = 0; i < logs.length; i++) {
-      p.text(logs[i], 30, 20 + i * 15);
-    }
+    // // Display logs on canvas
+    // p.textSize(12);
+    // p.fill(255);
+    // for (let i = 0; i < logs.length; i++) {
+    //   p.text(logs[i], 30, 20 + i * 15);
+    // }
+
+    nonExistentFunction(); // This will trigger a ReferenceError
 
   }
 
@@ -1387,12 +1403,32 @@ window.onerror = function(message, source, lineno, colno, error) {
   console.log("Error: " + message + " at line: " + lineno + ":" + colno);
 };
 
+// setInterval(() => {
+//   console.log("Log message at " + new Date().toLocaleTimeString());
+//     console.log("Frame Rate: " + frameRateLog);
+//     console.log("frameCount: " + frameCountLog)
+//   console.log("Mouse X: " + mouseXLog);
+//   console.log("Mouse Y: " + mouseYLog);
+//   console.log("Key Variable: " + keyVariable);
+//   console.log("------------");
+// }, 1000);
+
+
+function updateLogElement() {
+  let logElement = document.getElementById('log');
+  if (!logElement) {
+    logElement = document.createElement('p');
+    logElement.id = 'log';
+    logElement.style.position = "fixed"
+    logElement.style.top = "20px"
+    logElement.style.left = "20px"
+    logElement.style.color = "white"
+    document.body.appendChild(logElement);
+  }
+  logElement.innerHTML = logs.join('<br>');
+}
+
+// Example log statements
 setInterval(() => {
   console.log("Log message at " + new Date().toLocaleTimeString());
-    console.log("Frame Rate: " + frameRateLog);
-    console.log("frameCount: " + frameCountLog)
-  console.log("Mouse X: " + mouseXLog);
-  console.log("Mouse Y: " + mouseYLog);
-  console.log("Key Variable: " + keyVariable);
-  console.log("------------");
 }, 1000);
