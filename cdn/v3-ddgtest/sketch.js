@@ -3,6 +3,8 @@ let frameRateLog = 0;
 let mouseXLog = 0;
 let mouseYLog = 0;
 let keyVariable = 0; // Replace with your key variable
+let lastUpdateTime;
+
 
 
 let easyPoints = [];
@@ -321,6 +323,7 @@ let mainSketch = function(p) {
 
   p.setup = function() {
     // Override the default console.log function
+    lastUpdateTime = p.millis();
     const originalConsoleLog = console.log;
     console.log = function(message) {
       logs.push(message);
@@ -1021,6 +1024,8 @@ let mainSketch = function(p) {
   let sketchHeight = (sketchSection.offsetHeight * 0.85) - window.innerHeight;
 
   p.draw = function() {
+    lastUpdateTime = p.millis();
+
     if(p.mouseX != 0) {
       mouseXglobal = p.mouseX
       mouseYglobal = p.mouseY
@@ -1243,10 +1248,14 @@ let mainSketch = function(p) {
     //   p.text(logs[i], 30, 20 + i * 15);
     // }
 
-    nonExistentFunction(); // This will trigger a ReferenceError
+    // nonExistentFunction(); // This will trigger a ReferenceError
 
   }
 
+  p.isRunning = function() {
+    // If the time since the last update is greater than a threshold, consider the sketch as crashed
+    return p.millis() - lastUpdateTime < 1200; // 2 seconds threshold
+  };
 
 
 }
@@ -1403,15 +1412,7 @@ window.onerror = function(message, source, lineno, colno, error) {
   console.log("Error: " + message + " at line: " + lineno + ":" + colno);
 };
 
-// setInterval(() => {
-//   console.log("Log message at " + new Date().toLocaleTimeString());
-//     console.log("Frame Rate: " + frameRateLog);
-//     console.log("frameCount: " + frameCountLog)
-//   console.log("Mouse X: " + mouseXLog);
-//   console.log("Mouse Y: " + mouseYLog);
-//   console.log("Key Variable: " + keyVariable);
-//   console.log("------------");
-// }, 1000);
+
 
 
 function updateLogElement() {
@@ -1423,12 +1424,24 @@ function updateLogElement() {
     logElement.style.top = "20px"
     logElement.style.left = "20px"
     logElement.style.color = "white"
+    logElement.style.background = "black"
     document.body.appendChild(logElement);
   }
   logElement.innerHTML = logs.join('<br>');
 }
 
 // Example log statements
-setInterval(() => {
-  console.log("Log message at " + new Date().toLocaleTimeString());
-}, 1000);
+// setInterval(() => {
+//   console.log("Log message at " + new Date().toLocaleTimeString());
+// }, 1000);
+
+
+function checkAndRestartSketch() {
+  // Check if the draw loop is running
+  if (!sketch.isRunning()) {
+    // Call your function to restart the sketch
+    newSketch();
+  }
+}
+
+setInterval(checkAndRestartSketch, 1000);
