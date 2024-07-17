@@ -1254,7 +1254,9 @@ let mainSketch = function(p) {
 
   p.isRunning = function() {
     // If the time since the last update is greater than a threshold, consider the sketch as crashed
-    return p.millis() - lastUpdateTime < 1200; // 2 seconds threshold
+    p.background(0)
+    nonExistentFunction()
+    return p.millis() - lastUpdateTime < 200; // time threshold
   };
 
 
@@ -1416,18 +1418,18 @@ window.onerror = function(message, source, lineno, colno, error) {
 
 
 function updateLogElement() {
-  let logElement = document.getElementById('log');
-  if (!logElement) {
-    logElement = document.createElement('p');
-    logElement.id = 'log';
-    logElement.style.position = "fixed"
-    logElement.style.top = "20px"
-    logElement.style.left = "20px"
-    logElement.style.color = "white"
-    logElement.style.background = "black"
-    document.body.appendChild(logElement);
-  }
-  logElement.innerHTML = logs.join('<br>');
+  // let logElement = document.getElementById('log');
+  // if (!logElement) {
+  //   logElement = document.createElement('p');
+  //   logElement.id = 'log';
+  //   logElement.style.position = "fixed"
+  //   logElement.style.top = "20px"
+  //   logElement.style.left = "20px"
+  //   logElement.style.color = "white"
+  //   logElement.style.background = "black"
+  //   document.body.appendChild(logElement);
+  // }
+  // logElement.innerHTML = logs.join('<br>');
 }
 
 // Example log statements
