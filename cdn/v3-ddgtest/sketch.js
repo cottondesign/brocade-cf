@@ -1254,8 +1254,7 @@ let mainSketch = function(p) {
 
   p.isRunning = function() {
     // If the time since the last update is greater than a threshold, consider the sketch as crashed
-    p.background(0)
-    nonExistentFunction()
+
     return p.millis() - lastUpdateTime < 200; // time threshold
   };
 
