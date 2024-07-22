@@ -323,7 +323,7 @@ let mainSketch = function(p) {
 
   p.setup = function() {
     // Override the default console.log function
-    lastUpdateTime = p.millis();
+    lastUpdateTime = Date.now();
     const originalConsoleLog = console.log;
     console.log = function(message) {
       logs.push(message);
@@ -1024,7 +1024,7 @@ let mainSketch = function(p) {
   let sketchHeight = (sketchSection.offsetHeight * 0.85) - window.innerHeight;
 
   p.draw = function() {
-    lastUpdateTime = p.millis();
+    lastUpdateTime = Date.now();
 
     if(p.mouseX != 0) {
       mouseXglobal = p.mouseX
@@ -1252,11 +1252,7 @@ let mainSketch = function(p) {
 
   }
 
-  p.isRunning = function() {
-    // If the time since the last update is greater than a threshold, consider the sketch as crashed
 
-    return p.millis() - lastUpdateTime < 200; // time threshold
-  };
 
 
 }
@@ -1266,7 +1262,10 @@ let mainSketch = function(p) {
 let sketch = new p5(mainSketch, 'canvasContainer1');
 
 
-
+function isRunning() {
+  // If the time since the last update is greater than a threshold, consider the sketch as crashed
+  return (Date.now() - lastUpdateTime) < 100; // time threshold
+};
 
 
 function easeInOut(t) {
@@ -1439,10 +1438,11 @@ function updateLogElement() {
 
 function checkAndRestartSketch() {
   // Check if the draw loop is running
-  if (!sketch.isRunning()) {
+  if (!isRunning()) {
     // Call your function to restart the sketch
     newSketch();
+    console.log("CAUGHT CRASH")
   }
 }
 
-setInterval(checkAndRestartSketch, 1000);
+setInterval(checkAndRestartSketch, 200);
