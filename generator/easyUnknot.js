@@ -31,7 +31,7 @@ let easyUnknot = function(p) {
         colors.push([p.random(255),p.random(255),p.random(255)])
       }
   
-      let canvas = p.createCanvas(1200, 1200).style("-webkit-filter", `url("#svgfilter")`).style("filter", `url("#svgfilter")`);
+      let canvas = p.createCanvas(p.windowHeight, p.windowHeight).style("-webkit-filter", `url("#svgfilter")`).style("filter", `url("#svgfilter")`);
       canvas.parent('sketch-holder');
       center = {x:p.width/2, y:p.height/2}
       p.width = p.width*.7

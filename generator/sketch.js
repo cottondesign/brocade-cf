@@ -1397,7 +1397,7 @@ function handleRadioChange(value) {
   console.log('Selected option:', value);
   if (value == "easy") {
     newSketch(easyUnknot);
-    document.getElementById('easyUnknotControls').style.height = "430px"
+    document.getElementById('easyUnknotControls').style.height = "300px"
   } else if (value == "hard") {
     setTimeout(() => {
       document.getElementById('easyUnknotControls').innerHTML = ""
