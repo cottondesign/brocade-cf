@@ -1,0 +1,334 @@
+html, body {
+  margin: 0;
+  padding: 0;
+}
+
+
+.inter-<uniquifier> {
+  font-family: "Inter", sans-serif;
+  font-optical-sizing: auto;
+  font-weight: <weight>;
+  font-style: normal;
+  font-variation-settings:
+    "slnt" 0;
+}
+
+body {
+ background-color: #171C31;
+ color: #171C31;
+ font-family: "Inter";
+ font-weight: 300;
+}
+
+canvas {
+  display: block;
+  /* cursor: none; */
+}
+
+#sketch-section {
+  height: 250lvh;
+}
+
+#buttons-container {
+  display: flex;
+  flex-direction: column;
+  margin-right: 20px;
+  position: fixed;
+  width: 200px;
+  height: 95vh;
+  top: 20px;
+  left: 20px;
+  /* background: #fff; */
+  z-index: 10;
+  justify-content: start;
+}
+
+.topMarginButton {
+  margin-top: 12px;
+}
+
+.dummy {
+  font-size: 5vw;
+  color: white;
+}
+.dummyTop {
+  color: white;
+  font-size: 3vw;
+  width: 33%;
+}
+
+@media (max-width: 768px) {
+  .dummy {
+    font-size: 8vw;
+  }
+}
+
+#sketch-section {
+}
+
+#sketch-holder, #sketch-holder-2, #sketch-holder-3 {
+  position: sticky;
+  top: 0px;
+  right: 0px;
+  height: 100vh;
+  width: 100vw;
+  display:flex;
+  align-items: center;
+  justify-content: center;
+  right: 0px;
+  margin-left: auto; /* Ensures the child aligns to the right */
+}
+
+#sketch-holder {
+  margin-top: -200px;
+  /* z-index:-10; */
+}
+
+#sketch-holder-2 {
+  z-index:-10;
+}
+
+#sketch-holder-3 {
+  z-index:-5;
+}
+
+#svg-container {
+  display: none;
+}
+
+#btmSketch {
+  /* z-index:-10 */
+}
+#cursorSketch {
+  z-index: -5
+}
+
+
+@media (max-aspect-ratio: 1/1) {
+  #defaultCanvas0 {
+    /* Your styles for portrait aspect ratio */
+		height: 100dvw;
+    width: auto;
+  }
+}
+
+@media (min-aspect-ratio: 1/1) {
+#defaultCanvas0 {
+  /* Your styles for landscape aspect ratio */
+  height: 100dvh;
+  width: auto;
+}
+}
+
+
+
+
+.radio-container {
+  display: flex;
+  gap: 10px;
+  flex-direction: column;
+}
+
+.radio-label {
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+}
+
+.radio-input {
+  display: none;
+}
+
+.radio-custom {
+  width: 20px;
+  height: 20px;
+  border: 1px solid #F6F2E2;
+  border-radius: 50%;
+  margin-right: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.radio-input:checked + .radio-custom {
+  background-color: #F6F2E2;
+  border-color: #F6F2E2;
+}
+
+
+.checkbox-label {
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+}
+
+.checkbox-input {
+  display: none;
+}
+
+.checkbox-custom {
+  width: 20px;
+  height: 20px;
+  border: 1px solid #F6F2E2;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-right: 10px;
+}
+
+.checkbox-input:checked + .checkbox-custom {
+  background-color: #F6F2E2;
+  border-color: #F6F2E2;
+}
+
+
+.slider-container {
+  /* margin-bottom: 20px; */
+}
+
+.slider {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 100%;
+  height: 10px;
+  background: transparent;
+  outline: none;
+  margin: 0;
+  margin-top: 6px;
+  margin-bottom: 8px;
+}
+
+.slider::-webkit-slider-runnable-track {
+  width: 100%;
+  height: 10px;
+  background: transparent;
+  border: 1px solid #F6F2E2;
+  border-radius: 5px;
+  top: 3px; /* Adjust to center thumb */
+}
+.slider::-webkit-slider-thumb {
+  position: relative;
+  top: -6px;
+}
+
+
+.slider::-moz-range-track {
+  width: 100%;
+  height: 10px;
+  background: transparent;
+  border: 1px solid #F6F2E2;
+  border-radius: 5px;
+}
+
+.slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 20px;
+  height: 20px;
+  background: #F6F2E2;
+  border-radius: 50%;
+  cursor: pointer;
+}
+
+.slider::-moz-range-thumb {
+  width: 20px;
+  height: 20px;
+  background: #F6F2E2;
+  border-radius: 50%;
+  cursor: pointer;
+}
+
+
+#controls-bar {
+  padding: 30px;
+  border-right: 1px solid #F6F2E2;
+  height: 100vh;
+  box-sizing: border-box;
+  position: fixed;
+  top: 0px;
+  left: 0px;
+  color: #F6F2E2;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  z-index: 10000;
+  background: #171C31;
+  width: 400px;
+}
+
+#logo {
+  width: 160px;
+  height: auto;
+}
+#under-logo {
+  font-size: .6rem;
+}
+
+#generate {
+  border-radius: 30px;
+  background: #F6F2E2;
+  border: none;
+  font-family: inherit;
+  font-weight: 500;
+  padding: 10px 18px;
+  font-size: 1rem;
+  cursor: pointer;
+}
+
+#download {
+  border: none;
+  border-top: 1px dashed #F6F2E2;
+  color: inherit;
+  width: 100%;
+  height: 3rem;
+  margin-bottom: -1.5rem;
+  font-size: 1rem;
+  font-family: inherit;
+  background: none;
+  cursor: pointer;
+}
+
+.horiz-rule {
+  width: 100%;
+  border-bottom: 1px dashed #F6F2E2;
+  margin: 5px 0px;
+}
+
+#main-controls {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  /* transition: 300ms; */
+  transition: all 0.5s ease; /* Animation for growing */
+
+}
+
+.moves-button {
+  border-radius: 30px;
+  background: none;
+  color: inherit;
+  border: 1px solid #F6F2E2;
+  font-family: inherit;
+  font-weight: 300;
+  padding: 7px 18px;
+  font-size: 1rem;
+  cursor: pointer;
+  /* margin-left: -2px; */
+  margin-right: 7px;
+  margin-bottom: 8px;
+}
+
+#undo-button {
+  border: 1px dashed #F6F2E2;
+}
+
+.moves {
+  margin-top: 12px;
+  margin-bottom: -10px;
+}
+
+#easyUnknotControls {
+  transition: .5s;
+  height: 0px;
+  overflow-x: hidden;
+}

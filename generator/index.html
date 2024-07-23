@@ -1,0 +1,83 @@
+
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Brocade Current</title>
+
+    <link rel="stylesheet" type="text/css" href="style.css">
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@100..900&display=swap" rel="stylesheet">
+
+    <script src="https://cdn.jsdelivr.net/npm/p5@1.9.4/lib/p5.js"></script>
+    <!-- <script src="libraries/p5.sound.min.js"></script> -->
+  </head>
+
+  <body>
+    <div id="controls-bar">
+      <div>
+        <img id="logo" src="logo.png">
+        <div id="under-logo">Graphics Generator 1.0</div>
+      </div>
+
+      <div id="main-controls">
+        <button id="generate">Generate New Unknot</button>
+        <div class="horiz-rule"></div>
+        Type of Unknot
+        <div id="mode-radio" class="radio-container">
+          <label class="radio-label">
+              <input type="radio" name="difficulty" value="easy" class="radio-input">
+              <span class="radio-custom"></span>
+              Easy
+          </label>
+          <label class="radio-label">
+              <input type="radio" name="difficulty" value="hard" class="radio-input" checked>
+              <span class="radio-custom"></span>
+              Hard
+          </label>
+        </div>
+        <div class="horiz-rule"></div>
+        <label class="checkbox-label">
+          <input type="checkbox" class="checkbox-input" onclick="invertColors()">
+          <span class="checkbox-custom"></span>
+          Invert Colors
+        </label>
+        <div class="slider-container">
+          <input type="range" class="slider" id="slider1" min="10" max="30">
+          Stroke Weight
+        </div>
+        <div id="easyUnknotControls"></div>
+      </div>
+
+      <button id="download">Save PNG</button>
+    </div>
+
+    <div id="sketch-section">
+      <div id="sketch-holder">
+        <div id="svg-container">
+          <svg xmlns="http://www.w3.org/2000/svg" version="1.1">
+            <defs>
+              <filter id="svgfilter" color-interpolation-filters="sRGB" type="matrix" x="0%", y="0%" width="100%" and height="100%">
+                <!-- <feTurbulence type="turbulence" baseFrequency=".7" numOctaves="1" result="turbulence" /> -->
+                <feTurbulence type="turbulence" baseFrequency=".1" numOctaves="5" result="turbulence" />
+                <!-- <feDisplacementMap in2="turbulence" in="SourceGraphic" scale="5" xChannelSelector="R" yChannelSelector="G" /> -->
+                <feDisplacementMap in2="turbulence" in="SourceGraphic" scale="2" xChannelSelector="R" yChannelSelector="G" />
+              </filter>
+            </defs>
+          </svg>
+        </div>
+      </div>
+    </div>
+
+
+
+  </body>
+
+  <script src="sketch.js"></script>
+  <script src="easyUnknot.js"></script>
+
+</html>
