@@ -10,7 +10,6 @@ let randSpots = {
   all:[],
   rand:[]
 }
-
 let canvas
 let canvasDOM
 
@@ -20,12 +19,11 @@ let tickStart = 1
 let tick = tickStart
 let center
 let numSides = Math.floor(Math.random()*2)+7
-let strokeWeightt = 25
 
 
 let debugging = false
 let vertexControls = debugging ? true : false;
-let speedLimit = debugging ? .3 : 0.05;
+let speedLimit = debugging ? .3 : 0.028;
 let easingFactor = .2
 
 let bgColor = "#171C31"
@@ -311,7 +309,7 @@ for(let i=5;i<culprit[0].length;i++) {
 
 
 
-let hardUnknot = function(p) {
+let mainSketch = function(p) {
 
 
   p.setup = function() {
@@ -348,7 +346,7 @@ let hardUnknot = function(p) {
     // canvas.style('z-index', '50');
     // canvas.style('position', 'absolute');
     canvas.parent('sketch-holder');
-    canvas.mouseClicked(checkDifficulty)
+    canvas.mouseClicked(newSketch)
     center = {x:p.width/2, y:p.height/2}
     p.width *= widthChg
     p.height *= heightChg
@@ -522,6 +520,7 @@ let hardUnknot = function(p) {
     // random rotation
     sketchAngle = debugging ? 0 : p.random(360);
     sketchAngle *= (Math.PI / 180);
+    sketchAngle = 0
     // sketchAngle = p.random(360) * (Math.PI / 180);
     // sketchAngle = 0
 
@@ -1208,7 +1207,7 @@ let hardUnknot = function(p) {
 
 
 
-let sketch = new p5(hardUnknot, 'canvasContainer1');
+let sketch = new p5(mainSketch, 'canvasContainer1');
 
 
 
@@ -1235,11 +1234,11 @@ function drawSegments(p, start, end) {
       if (easyPoints[j].zIndex == i) {
         p.strokeCap(p.SQUARE)
         p.stroke(strokeColor)
-        p.strokeWeight(strokeWeightt)
+        p.strokeWeight(canvasSize/140 + 6)
         drawSegment(j, p)
         p.stroke(bgColor)
         // stroke(colors[easyPoints[j].grp])
-        p.strokeWeight(strokeWeightt*.56)
+        p.strokeWeight(canvasSize/280 + 3)
         drawSegment(j, p)
       }
       if (i == Math.floor(easyPoints.length/3) && !isTouchDevice() && mouseXglobal != undefined && !cursorOverElementsVar) {
@@ -1256,11 +1255,10 @@ function drawSegments(p, start, end) {
   }
 }
 
-function newSketch(whichUnknot) {
-  window.scrollTo(0, 0);
+function newSketch() {
   sketch.remove();
   progress = targetProgress
-  sketch = new p5(whichUnknot, 'canvasContainer1');
+  sketch = new p5(mainSketch, 'canvasContainer1');
 }
 
 // (function() {
@@ -1353,66 +1351,28 @@ document.addEventListener("mousemove", (event) => {
 });
 
 
-function updateStrokeWeight(event) {
-  strokeWeightt = event.target.value;
-  console.log("strokeWeightt:", strokeWeightt);
+
+
+
+
+
+function switchColors() {
+  let intermediate = strokeColor
+  strokeColor = bgColor
+  bgColor = intermediate
 }
 
-document.getElementById("slider1").addEventListener("input", updateStrokeWeight);
+const functionsArray = [
+  switchColors
+];
 
-function invertColors() {
-  let holder = bgColor
-  bgColor = strokeColor
-  strokeColor = holder
-  document.body.style.background = bgColor;
-}
+// Container for the buttons
+const container = document.getElementById('button-container');
 
-document.getElementById('download').addEventListener('click', function() {
-  sketch.saveCanvas('myCanvas', 'png');
+// Create buttons dynamically
+functionsArray.forEach((func, index) => {
+  const button = document.createElement('button');
+  button.innerText = `Run Function ${index + 1}`;
+  button.addEventListener('click', func);
+  container.appendChild(button);
 });
-
-function checkDifficulty() {
-  const difficulty = document.querySelector('input[name="difficulty"]:checked').value;
-  if (difficulty == "easy") {
-    newSketch(easyUnknot);
-  } else if (difficulty == "hard") {
-    newSketch(hardUnknot);
-  } else if (difficulty == "scratch") {
-    newSketch(scratch);
-  }
-}
-
-document.getElementById('generate').addEventListener('click', function() {
-  checkDifficulty();
-});
-
-document.getElementById('sketch-holder').style.width = `calc(100vw - ${document.getElementById('controls-bar').offsetWidth}px)`;
-
-
-document.getElementById('mode-radio').addEventListener('change', function(event) {
-  if (event.target.name === 'difficulty') {
-      handleRadioChange(event.target.value);
-  }
-});
-
-function handleRadioChange(value) {
-  console.log('Selected option:', value);
-  if (value == "easy") {
-    setTimeout(() => {
-      document.getElementById('easyUnknotControls').innerHTML = ""
-    }, 500);
-    newSketch(easyUnknot);
-    document.getElementById('easyUnknotControls').style.height = "0px"
-  } else if (value == "hard") {
-    setTimeout(() => {
-      document.getElementById('easyUnknotControls').innerHTML = ""
-    }, 500);
-    newSketch(hardUnknot);
-    document.getElementById('easyUnknotControls').style.height = "0px"
-  } else if (value == "scratch") {
-
-    newSketch(scratch);
-    document.getElementById('easyUnknotControls').style.height = "300px"
-  }
-}
-

@@ -8,13 +8,14 @@ let test2 = [0,0,0,0,0,0,0,0]
 let tick = 0
 let center
 let bgColor = "#171C31"
+let strokeColor = "#F5F2E1"
 let numSides = Math.floor(Math.random()*4)+4
 let motionSpeed = .1
 let radius
 let vertexControls = false
-let strokeColor = [255]
 let moveList = []
 let numTangles
+let strokeWeightt = 15
 
 //for test #2
 let colors = []
@@ -32,7 +33,7 @@ function setup() {
     colors.push([random(255),random(255),random(255)])
   }
 
-  canvas = createCanvas(800, 800).style("-webkit-filter", `url("#svgfilter")`).style("filter", `url("#svgfilter")`);
+  canvas = createCanvas(1200, 1200).style("-webkit-filter", `url("#svgfilter")`).style("filter", `url("#svgfilter")`);
   canvas.parent('sketch-holder');
   center = {x:width/2, y:height/2}
   width = width*.7
@@ -173,12 +174,12 @@ function draw() {
     // let nextIndex = (mainPoints[i]+1)%actualCoords.length
     for (let j=0;j<easyPoints.length;j++) {
       if (easyPoints[j].grp == groups[i]) {
-        stroke(bgColor)
-        strokeWeight(16)
-        drawSegment(j)
         stroke(strokeColor)
+        strokeWeight(strokeWeightt)
+        drawSegment(j)
+        stroke(bgColor)
         // stroke(colors[easyPoints[j].grp])
-        strokeWeight(5)
+        strokeWeight(strokeWeightt*.55)
         drawSegment(j)
       }
     }
@@ -644,7 +645,7 @@ function createButtonsForMoves() {
 }
 
 // Call function to create buttons on load
-// createButtonsForMoves();
+createButtonsForMoves();
 
 
 
@@ -686,3 +687,25 @@ function putInPlace() {
     easyPoints[i].bez2 = easyPoints[i].targetbez2
   }
 }
+
+
+function switchColors() {
+  let intermediate = strokeColor
+  strokeColor = bgColor
+  bgColor = intermediate
+}
+
+const functionsArray = [
+  switchColors
+];
+
+// Container for the buttons
+const container = document.getElementById('button-container');
+
+// Create buttons dynamically
+functionsArray.forEach((func, index) => {
+  const button = document.createElement('button');
+  button.innerText = `Run Function ${index + 1}`;
+  button.addEventListener('click', func);
+  container.appendChild(button);
+});

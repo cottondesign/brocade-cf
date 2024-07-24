@@ -184,6 +184,7 @@ canvas {
 
 .slider-container {
   /* margin-bottom: 20px; */
+  margin-top: 6px;
 }
 
 .slider {
@@ -299,8 +300,7 @@ canvas {
   flex-direction: column;
   gap: 1rem;
   /* transition: 300ms; */
-  transition: all 0.5s ease; /* Animation for growing */
-
+  height: 650px;  
 }
 
 .moves-button {

@@ -10,7 +10,7 @@ body {
 
 canvas {
   display: block;
-  cursor: none;
+  /* cursor: none; */
 }
 
 #buttons-container {

@@ -24,15 +24,15 @@ let numSides = Math.floor(Math.random()*2)+7
 
 let debugging = false
 let vertexControls = debugging ? true : false;
-let speedLimit = debugging ? .3 : 0.03;
+let speedLimit = debugging ? .3 : 0.15;
+let easingFactor = .2
 
 
-let strokeColor = [255]
+let strokeColor = "#F5F2E1"
 let moveList = []
 let colorthis = []
 let targetProgress = 0
 let progress = 0
-let easingFactor = .055
 let localT = 0
 let nextInterval, passedIntervals, passedIntEZ, remainingIntervals, interval, scrollHeight
 let mode = "full"
@@ -40,11 +40,12 @@ let numTangles
 let randPts = []
 let originalLocations = []; // To store the original locations
 let canvasSize
-let heightChg = .7
+let heightChg = .85
 
 
 //for test #2
 let colors = []
+let yes=0
 
 
 let scrollContent = document.getElementById("scroll-content") 
@@ -287,13 +288,27 @@ let culprit = [
 
 
 
-
+function createTracker(obj, key) {
+  return new Proxy(obj, {
+    set(target, property, value) {
+      if (property === key) {
+        console.log(`Value changed to ${value}`);
+      }
+      target[property] = value;
+      return true;
+    }
+  });
+}
 
 
 
 
 
 let mainSketch = function(p) {
+
+  p.mouseClicked = function() {
+    console.log("clicked: ", p.mouseX, p.mouseY)
+  }
 
   p.setup = function() {
     //for test #2
@@ -331,7 +346,7 @@ let mainSketch = function(p) {
     p.width *= .6
     p.height *= heightChg
     p.noFill();
-    p.frameRate(60);
+    p.frameRate(10);
     cursor = p.loadImage("cursor.png")
     vertexControlsButton = p.createButton('show/hide debug info');
     vertexControlsButton.parent('buttons-container');
@@ -376,7 +391,7 @@ let mainSketch = function(p) {
         easyPointsHistory[i].push(newVert);
       }
     }
-    easyPointsHistory.push(easyPointsHistory[easyPointsHistory.length-1])
+    easyPointsHistory.push(JSON.parse(JSON.stringify(easyPointsHistory[easyPointsHistory.length-1])));
     // easyPoints = easyPointsHistory[easyPointsHistory.length-1]
 
     numTangles = Math.floor(randCulprit.length/2)-1
@@ -391,6 +406,8 @@ let mainSketch = function(p) {
         }
     }
 
+    // easyPointsHistory[11][11] = createTracker(easyPointsHistory[11][11], "targety")
+
 
     // hard-coded fixes
     easyPointsHistory[4][1].targetangle += 360
@@ -401,50 +418,75 @@ let mainSketch = function(p) {
     // random positioning of select vertices
     randPts = [
       {stage:11,point:12, xBoundLow: -p.height*.2, xBoundHi: -p.height*.02, yBoundLow: -p.height*.06, yBoundHi: p.height*.06,
-        partnerPoint: 8,
-        bez2Hi: p.height*.2, bez2Low: -p.height*.01, bez2Rel: "xInv" 
+        partnerPoint: 8, onlyOne: true,
+        bez2Hi: p.height*.2, bez2Low: -p.height*.01, bez2Rel: "xInv",
+        otherPt1: 2, thisState1: "yLow", otherState1: "xHi", otherMoveMax1: -p.height*.1, otherPt1Which: "targetx"
+
       },
       {stage:11,point:11, xBoundLow: -p.height*.01, xBoundHi: p.height*.06, yBoundLow: -p.height*.2, yBoundHi: p.height*.06, onlyOne: true,
         angleLow: -30, angleHi: 100, angleRel: "yInv",
         bez2Hi: p.height*.02, bez2Low: -p.height*.001, bez2Rel: "yInv",
-        roundOut: "next", roundDist: p.height*.3, bezAdjust: .25
+        // roundOut: "next", roundDist: p.height*.3, bezAdjust: .25,
+        otherPt1: 10, thisState1: "yHi", otherState1: "yLow", otherMoveMax1: -p.height*.2, otherPt1Which: "targetbez1"
       },
       {stage:11,point:10, xBoundLow: -p.height*.06, xBoundHi: p.height*.06, yBoundLow: -p.height*.13, yBoundHi: p.height*.06,  //WORK HERE
-        bez1Hi: p.height*.2, bez1Low: -p.height*.01, bez1Rel: "yInv",
+        bez1Hi: p.height*.1, bez1Low: -p.height*.01, bez1Rel: "yInv",
         bez2Hi: p.height*.4, bez2Low: -p.height*.01, bez2Rel: "yInv",
-        angleLow: -60, angleHi: -1, angleRel: "xDir",
-        roundOut: "next", roundDist: p.height*.2, roundRel: "yInv", roundMin: -p.height*.09, roundMax: p.height*.04
+        angleLow: -10, angleHi: -1, angleRel: "xDir",
+        roundOut: "next", roundRel: "yInv", roundMin: -p.height*.1, roundMax: p.height*.04,
+        otherPt1: 4, otherPt1Rel: "yDir", otherPt1Which: "targety", otherPt1Low: -p.height*.1, otherPt1Hi: p.height*.01,
       },
       {stage:11,point:9, xBoundLow: -p.height*.001, xBoundHi: p.height*.06, yBoundLow: -p.height*.02, yBoundHi: p.height*.06},
       {stage:11,point:7, xBoundLow: -p.height*.1, xBoundHi: p.height*0.01, yBoundLow: -p.height*.1, yBoundHi: p.height*0.01, onlyOne: true,
         // bez1Hi: p.height*.2, bez1Low: p.height*.01, bez2Hi: p.height*.2, bez2Low: p.height*.01
+        otherPt1: 8, thisState1: "xHi", otherState1: "xLow", otherMoveMax1: p.height*.9, otherPt1Which: "targetbez1"
+      },
+      {stage:11,point:8, onlyOne: true,
+        // bez1Hi: p.height*.2, bez1Low: p.height*.01, bez2Hi: p.height*.2, bez2Low: p.height*.01,
+        otherPt1: 7, thisState1: "xLow", otherState1: "xHi", otherMoveMax1: p.height*.9, otherPt1Which: "targetbe21"
       },
       {stage:11,point:6, xBoundLow: -p.height*.3, xBoundHi: -p.height*.1, yBoundLow: -p.height*.06, yBoundHi: -p.height*.03,
-        bez1Hi: p.height*.2, bez1Low: -p.height*.03, bez1Rel: "xInv",
+        bez1Hi: p.height*.2, bez1Low: p.height*.03, bez1Rel: "xInv",
         bez2Hi: p.height*.2, bez2Low: -p.height*.03, bez2Rel: "xInv",
-        angleLow: -60, angleHi: -10, angleRel: "xDir"
+        angleLow: -60, angleHi: -30, angleRel: "xDir",
+        // roundOut: "prev", roundRel: "xInv", roundMin: -p.height*.1, roundMax: p.height*.1,
+        // otherPt1: 5, thisState1: "xHi", otherState1: "xLow", otherMoveMax1: p.height*.4, otherPt1Which: "targetbez1"
       },
       {stage:11,point:5, xBoundLow: -p.height*.30, xBoundHi: p.height*.20, yBoundLow: -p.height*.02, yBoundHi: p.height*.20,
         bez1Hi: -p.height*.1, bez1Low: -p.height*.3, bez1Rel: "xDir",
       },
       {stage:11,point:4, xBoundLow: -p.height*.02, xBoundHi: p.height*.02, yBoundLow: p.height*.08, yBoundHi: p.height*.23, onlyOne: true,
+        bez1Hi: p.height*.2, bez1Low: -p.height*.01, bez1Rel: "yInv",
       },
       {stage:11,point:3, xBoundLow: -p.height*.02, xBoundHi: p.height*.02, yBoundLow: -p.height*.1, yBoundHi: p.height*.15},
-      {stage:11,point:2, xBoundLow: -p.height*.1, xBoundHi: p.height*0.01, yBoundLow: -p.height*.1, yBoundHi: p.height*0.01,// onlyOne: true,
+      {stage:11,point:2, xBoundLow: -p.height*.1, xBoundHi: p.height*0.01, yBoundLow: -p.height*.1, yBoundHi: p.height*0.01,
         bez1Hi: p.height*.1, bez1Low: -p.height*.01, bez1Rel: "xInv",
-        bez2Hi: p.height*.2, bez2Low: -p.height*.01, bez2Rel: "xDir",
+        bez2Hi: p.height*.07, bez2Low: -p.height*.01, bez2Rel: "xDir",
+        angleLow: -40, angleHi: 20, angleRel: "xDir",
+        onlyOne: true
+      },
+      {stage:11, point:1, 
+        otherPt1: 0, thisState1: "xHi", otherState1: "xHi", otherMoveMax1: p.height*.9, otherPt1Which: "targetbez1"  //not working
+      },
+      {stage:11, point:0, xBoundLow: -p.height*.2, xBoundHi: p.height*.02, yBoundLow: -p.height*.3, yBoundHi: p.height*.01,
+        bez2Hi: p.height*.05, bez2Low: -p.height*.2, bez2Rel: "yDir",
+        bez1Hi: p.height*.3, bez1Low: -p.height*.08, bez1Rel: "xInv",
+        angleLow: -30, angleHi: 90, angleRel: "yInv",
+        otherPt1: 11, thisState1: "yLow", otherState1: "yHi", otherMoveMax1: -p.height*.1, otherPt1Which: "targety"
+      },
+      {stage:9,point:9, xBoundLow: -p.height*.01, xBoundHi: p.height*.06, yBoundLow: -p.height*.1, yBoundHi: p.height*.06, onlyOne: true,
+        angleLow: -30, angleHi: 50, angleRel: "yInv",
+        roundOut: "next", roundDist: p.height*.3, bezAdjust: .25
+      },
+      {stage:9,point:7, xBoundLow: -p.height*.08, xBoundHi: p.height*0.01, yBoundLow: -p.height*.03, yBoundHi: p.height*0.05, onlyOne: true,
+        // bez1Hi: p.height*.2, bez1Low: p.height*.01, bez2Hi: p.height*.2, bez2Low: p.height*.01
+      },
+      {stage:9,point:2, xBoundLow: -p.height*.1, xBoundHi: p.height*0.01, yBoundLow: -p.height*.1, yBoundHi: p.height*0.01,
+        bez1Hi: p.height*.1, bez1Low: -p.height*.01, bez1Rel: "xInv",
+        bez2Hi: p.height*.07, bez2Low: -p.height*.01, bez2Rel: "xDir",
         angleLow: -60, angleHi: 20, angleRel: "xDir",
         onlyOne: true
       },
-      {stage:11, point:0, xBoundLow: -p.height*.2, xBoundHi: p.height*.02, yBoundLow: -p.height*.3, yBoundHi: p.height*.06,
-        bez2Hi: p.height*.05, bez2Low: -p.height*.3, bez2Rel: "yDir",
-        bez1Hi: p.height*.3, bez1Low: -p.height*.04, bez1Rel: "xInv",
-        angleLow: -30, angleHi: 90, angleRel: "yInv"
-      },
-      // {stage:9,point:9, xBoundLow: -p.height*.01, xBoundHi: p.height*.06, yBoundLow: -p.height*.1, yBoundHi: p.height*.06, onlyOne: true,
-      //   angleLow: -30, angleHi: 50, angleRel: "yInv",
-      //   roundOut: "next", roundDist: p.height*.3, bezAdjust: .25
-      // },
       {stage:7, point:1, xBoundLow: -p.height*.05, xBoundHi: p.height*.06, yBoundLow: -p.height*.06, yBoundHi: p.height*.06,
         roundOut: "prev", roundDist: p.height*.2, bezAdjust: .25
       },
@@ -459,6 +501,8 @@ let mainSketch = function(p) {
     ]
 
     // randPts = []
+
+    
 
 
     for (let k=0; k< randPts.length; k++) {
@@ -487,6 +531,14 @@ let mainSketch = function(p) {
           y: easyPointsHistory[indices.stage][indices.partnerPoint].y
         }
       }
+      let otherPt1 = {x:0,y:0}
+      if (indices.otherPt1) {
+        otherPt1 = {
+          x: easyPointsHistory[indices.stage][indices.otherPt1].x,
+          y: easyPointsHistory[indices.stage][indices.otherPt1].y
+        }
+      }
+
       let xRand
       let yRand
       if (indices.xBoundHi) {
@@ -514,16 +566,37 @@ let mainSketch = function(p) {
       let whichBez
 
 
-      let length = indices.stopStage || 0;
-      if (indices.onlyOne) {length = indices.stage}
-      let stop = easyPointsHistory.length - 1
-      // let stop = indices.onlyOne ? length + 1 : easyPointsHistory.length - 1
-      for (let i=length; i < stop; i++) {
-        if (stop != easyPointsHistory.length-1) {console.log("stop",stop)}
+      let start = indices.stopStage || 0;
+      if (indices.onlyOne) {start = indices.stage}
+      // console.log("start",start, indices.point)
+
+      // let stop = easyPointsHistory.length - 1
+      let stop = indices.onlyOne ? start + 2 : easyPointsHistory.length - 1
+
+      // if (indices.stage == 11 && indices.point == 11) {console.log(length,stop)}
+      // if (indices.stage == 9 && indices.point == 9) {console.log(length,stop)}
+
+      for (let i=start; i < stop; i++) {
+        if(indices.stage == 11 && indices.point == 11) {
+          // console.log("start",start, "stop",stop, i)
+          // debugger
+        }
+        // if (indices.stage == 9 && indices.point == 9) {console.log("9,9",i)}
+        // if (indices.stage == 11 && indices.point == 11) {console.log("11,11",i)}
+        // if (stop != easyPointsHistory.length-1) {console.log("stop",stop)}
+
         for (let j=0; j < easyPointsHistory[i].length; j++) {
           // if (p.floor(easyPointsHistory[i][j].x) == p.floor(pt.x) && p.floor(easyPointsHistory[i][j].y) == p.floor(pt.y)) {
           if (easyPointsHistory[i][j].x == pt.x && easyPointsHistory[i][j].y == pt.y || easyPointsHistory[i][j].x == partnerPt.x && easyPointsHistory[i][j].y == partnerPt.y) {
             ppAmt = indices.partnerPointAmt || 1
+            // if (i == 11 && j == 11) {
+            //   yes +=1
+            //   console.log("stage",i,"point",j, "times",yes)
+            //   console.log(indices.stage,indices.point)
+            //   console.log("low",indices.xBoundLow, "hi", indices.xBoundHi)
+            //   console.log("xRand",xRand,"\nyRand",yRand)
+            //   console.log("x before",easyPointsHistory[i][j].x)
+            // }
             if (indices.xBoundHi) {
               easyPointsHistory[i][j].targetx += xRand * ppAmt
               easyPointsHistory[i][j].targety += yRand * ppAmt
@@ -537,9 +610,42 @@ let mainSketch = function(p) {
             if (indices.angleHi) {
               easyPointsHistory[i][j].targetangle += angleChange
             }
+            if (i == 11 && j == 11) {
+              console.log("x after",easyPointsHistory[i][j].targetx)
+            }
+          }
+          if (easyPointsHistory[i][j].x == otherPt1.x && easyPointsHistory[i][j].y == otherPt1.y){
+            if (indices.otherPt1Hi) {
+              let which = indices.otherPt1Which
+                switch (indices.otherPt1Rel) {
+                  case "yInv":
+                    easyPointsHistory[i][j][which] += p.map(yRand, indices.yBoundHi, indices.yBoundLow, indices.otherPt1Low, indices.otherPt1Hi)
+                    break;
+                  case "xInv":
+                    easyPointsHistory[i][j][which] += p.map(xRand, indices.xBoundHi, indices.xBoundLow, indices.otherPt1Low, indices.otherPt1Hi)
+                    break;
+                  case "yDir":
+                    easyPointsHistory[i][j][which] += p.map(yRand, indices.yBoundLow, indices.yBoundHi, indices.otherPt1Low, indices.otherPt1Hi)
+                    break;
+                  case "xDir":
+                    easyPointsHistory[i][j][which] += p.map(xRand, indices.xBoundLow, indices.xBoundHi, indices.otherPt1Low, indices.otherPt1Hi)
+                    break;
+                
+                  // default:
+                  //   if (distance < indices.roundDist ) {
+                  //     bezAdjust = indices.bezAdjust || .5
+                  //     console.log("bezAdjust", j)
+                  //     easyPointsHistory[i][j][whichBez] *= bezAdjust
+                  //   }
+                    break;
+                }
+
+
+              easyPointsHistory[i][indices.otherPt1].targetx += 0 //mapped value either 
+              easyPointsHistory[i][indices.otherPt1].targety += 0 
+            } 
           }
         }
-        length = 0
         for (let j=0; j < easyPointsHistory[i].length; j++) { // looping again to make adjustments after last changes
           if (easyPointsHistory[i][j].x == pt.x && easyPointsHistory[i][j].y == pt.y || easyPointsHistory[i][j].x == partnerPt.x && easyPointsHistory[i][j].y == partnerPt.y) {
             if (indices.roundOut) {
@@ -563,7 +669,6 @@ let mainSketch = function(p) {
               switch (indices.roundRel) {
                 case "yInv":
                   easyPointsHistory[i][j][whichBez] += p.map(distanceMovedY, p.height*.1, -p.height*.1, indices.roundMin, indices.roundMax)
-                  console.log("map",p.map(distanceMovedY, p.height*.1, -p.height*.1, indices.roundMin, indices.roundMax))
                   break;
                 case "xInv":
                   easyPointsHistory[i][j][whichBez] += p.map(distanceMovedX, p.height*.1, -p.height*.1, indices.roundMin, indices.roundMax)
@@ -588,9 +693,185 @@ let mainSketch = function(p) {
         }
       }
     }
+    // 
+    // 
+    // 
+    // loop thru randPts a second time for corrections
+    // 
+    // 
+    // 
+    for (let k=0; k< randPts.length; k++) {
+      
+      let indices = randPts[k]
+
+      // set Rels to false if they dont exist
+      if (!indices.hasOwnProperty("bez1Rel")) { 
+        indices["bez1Rel"] = false;
+      }
+      if (!indices.hasOwnProperty("bez2Rel")) { 
+        indices["bez2Rel"] = false;
+      }
+      if (!indices.hasOwnProperty("angleRel")) { 
+        indices["angleRel"] = false;
+      }
+
+      let pt = {
+        x: easyPointsHistory[indices.stage][indices.point].x,
+        y: easyPointsHistory[indices.stage][indices.point].y
+      }
+      let partnerPt = {x:0,y:0}
+      if (indices.partnerPoint) {
+        partnerPt = {
+          x: easyPointsHistory[indices.stage][indices.partnerPoint].x,
+          y: easyPointsHistory[indices.stage][indices.partnerPoint].y
+        }
+      }
+      let otherPt1 = {x:0,y:0}
+      if (indices.otherPt1) {
+        otherPt1 = {
+          x: easyPointsHistory[indices.stage][indices.otherPt1].x,
+          y: easyPointsHistory[indices.stage][indices.otherPt1].y
+        }
+      }
+
+      let xRand
+      let yRand
+      if (indices.xBoundHi) {
+        xRand = p.random(indices.xBoundLow, indices.xBoundHi)
+        yRand = p.random(indices.yBoundLow, indices.yBoundHi)
+      }
+      let bez1Rand
+      let bez2Rand
+      if (indices.bez1Hi) {
+        // bez1Rand = p.random(indices.bez1Low, indices.bez1Hi)
+        bez1Rand = randRelChg(xRand, yRand, indices, indices.bez1Low, indices.bez1Hi, indices.bez1Rel)
+
+      }
+      if (indices.bez2Hi) {
+        // bez2Rand = p.random(indices.bez2Low, indices.bez2Hi)
+        bez2Rand = randRelChg(xRand, yRand, indices, indices.bez2Low, indices.bez2Hi, indices.bez2Rel)
+      }
+
+      let angleChange
+      if (indices.angleHi) {
+        angleChange = randRelChg(xRand, yRand, indices, indices.angleLow, indices.angleHi, indices.angleRel)
+      }
+
+      let bezAdjust
+      let whichBez
+
+
+      let start = indices.stopStage || 0;
+      if (indices.onlyOne) {start = indices.stage}
+      // console.log("start",start, indices.point)
+
+      // let stop = easyPointsHistory.length - 1
+      let stop = indices.onlyOne ? start + 2 : easyPointsHistory.length - 1
+
+      // if (indices.stage == 11 && indices.point == 11) {console.log(length,stop)}
+      // if (indices.stage == 9 && indices.point == 9) {console.log(length,stop)}
+
+      for (let i=start; i < stop; i++) {
+        if(indices.stage == 11 && indices.point == 11) {
+          // console.log("start",start, "stop",stop, i)
+          // debugger
+        }
+        // if (indices.stage == 9 && indices.point == 9) {console.log("9,9",i)}
+        // if (indices.stage == 11 && indices.point == 11) {console.log("11,11",i)}
+        // if (stop != easyPointsHistory.length-1) {console.log("stop",stop)}
+
+
+        for (let j=0; j < easyPointsHistory[i].length; j++) { // looping again to make adjustments after last changes
+          if (easyPointsHistory[i][j].x == pt.x && easyPointsHistory[i][j].y == pt.y || easyPointsHistory[i][j].x == partnerPt.x && easyPointsHistory[i][j].y == partnerPt.y) {
+            if (indices.otherMoveMax1) {
+              let otherPt1Entry = randPts.find(x => x.stage == i && x.point == indices.otherPt1)
+              if (otherPt1Entry) {
+                // console.log("otherPt1Entry",otherPt1Entry)
+                console.log("stage",i,"point",j,"otherPt1",indices.otherPt1)
+                //make normalized value of distance moved (0 if not in target direction and axis) for both this point and otherPt1
+                // multiply the values together, multiply by otherMoveMax1, and change otherPt1's target attribute by that amount
+                // console.log("otherPt1Entry",otherPt1Entry)
+                let distanceMovedXo = easyPointsHistory[i][indices.otherPt1].targetx - originalLocations[i][indices.otherPt1].x;
+                // console.log("easyPointsHistory[i][indices.otherPt1]",easyPointsHistory[i][indices.otherPt1].targetx, "originalLocations[i][indices.otherPt1]",originalLocations[i][indices.otherPt1].x)
+                let distanceMovedYo = easyPointsHistory[i][indices.otherPt1].targety - originalLocations[i][indices.otherPt1].y;
+                let distanceMovedX = easyPointsHistory[i][indices.point].targetx - originalLocations[i][indices.point].x;
+                let distanceMovedY = easyPointsHistory[i][indices.point].targety - originalLocations[i][indices.point].y;
+                // console.log("points",indices.otherPt1, indices.point)
+                // console.log("distanceMovedXo",distanceMovedXo, "distanceMovedYo",distanceMovedYo)
+                // console.log("distanceMovedX",distanceMovedX, "distanceMovedY",distanceMovedY)
+                // console.log("distanceMovedXo",distanceMovedXo, "distanceMovedYo",distanceMovedYo)
+                // console.log("distanceMovedX",distanceMovedX, "distanceMovedY",distanceMovedY)
+                // otherPt1: 11, thisState1: "yLow", otherState1: "yHi", otherMoveMax1: p.height*.1, otherPt1Which: "targety"
+                let valueo //x low, x high, y low, y high
+                let valueol
+                let value
+                let valuel
+                let disto
+                let dist
+                switch (indices.otherState1) {
+                  case "yLow":
+                    valueo = otherPt1Entry.yBoundLow
+                    disto = distanceMovedYo
+                    valueol = otherPt1Entry.yBoundHi
+                    break;
+                  case "yHi":
+                    valueo = otherPt1Entry.yBoundHi
+                    disto = distanceMovedYo
+                    valueol = otherPt1Entry.yBoundLow
+                    break;
+                  case "xLow":
+                    valueo = otherPt1Entry.xBoundLow
+                    disto = distanceMovedXo
+                    valueol = otherPt1Entry.xBoundHi
+                    break;
+                  case "xHi":
+                    valueo = otherPt1Entry.xBoundHi
+                    disto = distanceMovedXo
+                    valueol = otherPt1Entry.xBoundLow
+                    break;
+                }
+                switch (indices.thisState1) {
+                  case "yLow":
+                    value = indices.yBoundLow
+                    dist = distanceMovedY
+                    valuel = indices.yBoundHi
+                    break;
+                  case "yHi":
+                    value = indices.yBoundHi
+                    dist = distanceMovedY
+                    valuel = indices.yBoundLow
+                    break;
+                  case "xLow":
+                    value = indices.xBoundLow
+                    dist = distanceMovedX
+                    valuel = indices.xBoundHi
+                    break;
+                  case "xHi":
+                    value = indices.xBoundHi
+                    dist = distanceMovedX
+                    valuel = indices.xBoundLow
+                    break;
+                }
+                // console.log("valueo",valueo, "value",value)
+                let distanceMovedONorm = p.max(0, p.map(disto, valueol, valueo, -1, 1))
+                let distanceMovedNorm = p.max(0, p.map(dist, valuel, value, -1, 1))
+                console.log("disto",disto, "dist",dist)
+                // HELP HERE: why are these values never both positive?
+                console.log(indices.stage,indices.otherPt1,"distanceONorm",distanceMovedONorm, "distanceNorm",distanceMovedNorm)
+                let distanceMovedMult = distanceMovedONorm * distanceMovedNorm * indices.otherMoveMax1
+                console.log("distanceMovedMult",distanceMovedMult)
+                // change otherPt1's target attribute by that distanceMovedMult
+                easyPointsHistory[i][indices.otherPt1][indices.otherPt1Which] += distanceMovedMult
+              }
+            }
+          }
+        }
+      }
+    }
 
     // random rotation
     let angle = debugging ? 0 : p.random(360);
+    angle = 0
     let radians = angle * (Math.PI / 180);
 
     for (let i = 0; i < easyPointsHistory.length-1; i++) { //length-1 because rotation was being applied twice to last item for some reason
@@ -649,7 +930,7 @@ let mainSketch = function(p) {
       window.scrollTo({ top: scrollPosition, behavior: 'instant' });
     }
     
-    // Example usage: scroll to 50% of the page height
+    // used for maintaining scroll point on reload
     if(debugging) {scrollToPercentage(50)};
     
 
@@ -694,7 +975,7 @@ let mainSketch = function(p) {
 
   };
 
-
+  
   p.draw = function() {
 
     scrollHeight = document.documentElement.scrollHeight - window.innerHeight-0;
@@ -723,7 +1004,7 @@ let mainSketch = function(p) {
 
 
     // --------------- update coordinates for motion
-    if (p.frameCount%4 == 0){
+    if (p.frameCount%1 == 0){
 
       if(mode == "full"){
         if (passedIntervals+1) {
@@ -772,34 +1053,8 @@ let mainSketch = function(p) {
     // p.background(bgColor);
     p.clear()
     p.noFill()
-    // canvas2.noFill()
-
-    // let targetCanvas
     
-    // for (let i=0; i<groups.length; i++) {
-
-    //   // if (i == Math.floor(groups.length/2)) {
-    //   //   noStroke()
-    //   //   fill(0,0,255)
-    //   //   // circle(mouseX, mouseY, 10)
-    //   //   image(cursor, mouseX, mouseY, 13,20)
-    //   //   noFill()
-    //   // }
-    //   // let prevIndex = (mainPoints[i]-1+actualCoords.length)%actualCoords.length
-    //   // let nextIndex = (mainPoints[i]+1)%actualCoords.length
-    //   for (let j=0;j<easyPoints.length;j++) {
-    //     if (easyPoints[j].grp == groups[i]) {
-    //       p.stroke(bgColor)
-    //       p.strokeWeight(16)
-    //       drawSegment(j, p)
-    //       p.stroke(strokeColor)
-    //       // stroke(colors[easyPoints[j].grp])
-    //       p.strokeWeight(5)
-    //       drawSegment(j, p)
-    //     }
-    //   }
-    // }
-    drawSegments(p, Math.floor(easyPoints.length / 2)-1, easyPoints.length);
+    drawSegments(p, 0, easyPoints.length);
     // drawWrapSegments(p, "top")
     // p.fill(0,0,255)
     // p.circle(center.x, center.y, 30)
@@ -827,10 +1082,10 @@ let mainSketch = function(p) {
         p.noFill();
         p.stroke(250, 0, 0);
         p.strokeWeight(.5);
-        // p.circle(actualCoords[i][0], actualCoords[i][1], 4);
-        // p.circle(actualCoords[i][2], actualCoords[i][3], 4);
-        // p.line(actualCoords[i][4], actualCoords[i][5], actualCoords[nextIndex][0], actualCoords[nextIndex][1]);
-        // p.line(actualCoords[i][4], actualCoords[i][5], actualCoords[i][2], actualCoords[i][3]);
+        p.circle(actualCoords[i][0], actualCoords[i][1], 4);
+        p.circle(actualCoords[i][2], actualCoords[i][3], 4);
+        p.line(actualCoords[i][4], actualCoords[i][5], actualCoords[nextIndex][0], actualCoords[nextIndex][1]);
+        p.line(actualCoords[i][4], actualCoords[i][5], actualCoords[i][2], actualCoords[i][3]);
         p.noStroke()
 
         p.textSize(20)
@@ -861,17 +1116,29 @@ let mainSketch = function(p) {
                 p.text(indices.stage+","+indices.point,xBoundLow, yBoundLow)
                 p.rect(xBoundLow, yBoundLow, xBoundHi - xBoundLow, yBoundHi - yBoundLow);
 
-                if (indices.roundOut) {
+                if (indices.roundOut || indices.otherPt1) {
                   let which
+                  // console.log(indices.stage,indices.point)
                   if (indices.roundOut == "next") {
                     which = (indices.point+1)%easyPoints.length
+                    p.stroke(0,255,0)
+                    p.strokeWeight(2)
+                    p.circle(easyPoints[which].x, easyPoints[which].y, 12)
                   } else if (indices.roundOut == "prev") {
                     which = (indices.point-1+easyPoints.length)%easyPoints.length
+                    p.stroke(0,255,0)
+                    p.strokeWeight(2)
+                    p.circle(easyPoints[which].x, easyPoints[which].y, 12)
                   }
-                  // p.text("i"+which+"\nz"+easyPoints[which].zIndex, easyPoints[which].x, easyPoints[which].y)
-                  p.stroke(0,255,0)
-                  p.strokeWeight(2)
-                  p.circle(easyPoints[which].x, easyPoints[which].y, 12)
+                  if (indices.otherPt1) {
+                    //not working
+                    p.stroke(200,0,200)
+                    which = indices.otherPt1
+                    p.strokeWeight(2)
+                    p.circle(easyPoints[which].x, easyPoints[which].y, 12)
+                    console.log("PURPLE")
+                  }
+                  p.text("i"+which+"\nz"+easyPoints[which].zIndex, easyPoints[which].x, easyPoints[which].y)
                 }
               }
             }
@@ -891,9 +1158,9 @@ let mainSketch = function(p) {
                     which = (indices.point-1+easyPoints.length)%easyPoints.length
                   }
                   // p.text("i"+which+"\nz"+easyPoints[which].zIndex, easyPoints[which].x, easyPoints[which].y)
-                  p.stroke(0,255,0)
+                  p.stroke(0,255,255)
                   p.strokeWeight(3)
-                  p.circle(easyPoints[which].x, easyPoints[which].y, 12)
+                  p.circle(easyPoints[j].x, easyPoints[j].y, 12)
                 }
               }
             }
@@ -904,8 +1171,6 @@ let mainSketch = function(p) {
             for(let i=0; i<easyPoints.length; i++) {
               p.text("i"+i+"\nz"+easyPoints[i].zIndex, easyPoints[i].x, easyPoints[i].y)
             }
-            // color roundout points
-            p.fill(0,255,0)
 
 
             p.fill(255,0,0)
@@ -941,7 +1206,7 @@ let btmSketch = function(p) {
       
 
       p.noFill();
-      p.frameRate(60);
+      p.frameRate(15);
   };
 
   p.draw = function() {
@@ -995,9 +1260,9 @@ let cursorSketch = function(p) {
 
 
 
-new p5(mainSketch, 'canvasContainer1');
-new p5(cursorSketch, 'canvasContainer1');
-new p5(btmSketch, 'canvasContainer2');
+new p5(mainSketch, 'poop');
+// new p5(cursorSketch, 'canvasContainer1');
+// new p5(btmSketch, 'canvasContainer2');
 
 
 
@@ -1006,26 +1271,6 @@ new p5(btmSketch, 'canvasContainer2');
 
 function easeInOut(t) {
   return t < 0.5 ? 2 * t * t : -1 + (4 - 2 * t) * t;
-}
-
-
-
-function shuffle(array) {
-  let currentIndex = array.length, randomIndex;
-
-  // While there remain elements to shuffle...
-  while (currentIndex != 0) {
-
-    // Pick a remaining element...
-    randomIndex = Math.floor(Math.random() * currentIndex);
-    currentIndex--;
-
-    // And swap it with the current element.
-    [array[currentIndex], array[randomIndex]] = [
-      array[randomIndex], array[currentIndex]];
-  }
-
-  return array;
 }
 
 
@@ -1054,112 +1299,6 @@ function drawSegments(p, start, end) {
   }
 }
 
-function drawWrapSegments(p, side) {
-  for (let j = 0; j < wrapSegments.length; j++) {
-    if (wrapSegments[j].showAfter < moveList.length-1 && wrapSegments[j].side == side){
-      for (let i=0;i<2;i++) {
-        p.strokeCap(p.SQUARE)
-        p.stroke(strokeColor)
-        p.strokeWeight(14)
-        drawSegment(wrapSegments[j].segments[i], p)
-        p.stroke(255,0,0)
-        p.stroke(bgColor)
-        // stroke(colors[easyPoints[j].grp])
-        p.strokeWeight(8)
-        drawSegment(wrapSegments[j].segments[i], p)
-      }
-    }
-  }
-}
-
-function isInBottomWrapSegment(index) {
-  for (let k = 0; k < wrapSegments.length; k++) {
-    if (wrapSegments[k].side === "bottom" && wrapSegments[k].segments.includes(index) && moveList.length-1 > wrapSegments[k].showAfter) {
-      return true;
-    }
-  }
-  return false;
-}
-
-
-function getMain(grp) {
-  for (let i=0; i<easyPoints.length; i++) {
-    if (easyPoints[i].isMain && easyPoints[i].grp == grp) {
-      return i
-    }
-  }
-}
-
-
-function executeMove(idx, p, grpIndex) {
-  if (tick < groups.length) {
-    // let pointIndex = mainPoints[tick];
-    let pointIndex = getMain(grpIndex)
-
-    if (!easyPoints[pointIndex].processed) {
-
-      let tm1 = (pointIndex + easyPoints.length - 1) % easyPoints.length; //support points
-      let tp1 = (pointIndex + 1) % easyPoints.length; //support points
-      moves[idx](pointIndex, tm1, tp1, p); // Execute the move
-
-      easyPoints[pointIndex].processed = true; // Mark this point as processed
-      easyPointsHistory.push(JSON.parse(JSON.stringify(easyPoints))); // Store state after changes
-      moveList.push(idx)
-      tick++;
-
-      if (grpIndex < numSides/2+1 && grpIndex > numSides/2-1) {
-        wrapSegments.push({
-          segments: [pointIndex, pointIndex+1],  // Example segment indices
-          showAfter: moveList.length-1,      
-          side: "bottom"     // Ensure this is "bottom" for bottom segments
-        });
-        //remove possibility of submove (?)
-        easyPoints[pointIndex].subMoves = []
-      }
-    }
-
-  }
-}
-
-
-function executeSubMove(idx, p) {
-  let subMoveOptions = []
-  for (i=0;i<easyPoints.length;i++){
-    if (easyPoints[i].subMoves.includes(idx)) {
-      subMoveOptions.push(i)
-    }
-  } if(subMoveOptions.length>0) {
-    let pointIndex = subMoveOptions[subMoveOptions.length-1]
-    let tm1 = (pointIndex + easyPoints.length - 1) % easyPoints.length;
-    let tp1 = (pointIndex + 1) % easyPoints.length;
-    subMoves[idx](pointIndex, tm1, tp1, p);
-    easyPoints[pointIndex].subMoves = [] //maybe just remove the one you did?
-    easyPointsHistory.push(JSON.parse(JSON.stringify(easyPoints)));
-    // tick++
-    moveList.push(idx)
-  }
-}
-
-
-function undo() {
-  if (moveList.length > 0) {
-    for (let i = 0; i < easyPoints.length; i++) {
-      easyPoints[i].targetx = easyPointsHistory[easyPointsHistory.length-1][i].targetx;
-      easyPoints[i].targety = easyPointsHistory[easyPointsHistory.length-1][i].targety;
-      easyPoints[i].targetangle = easyPointsHistory[easyPointsHistory.length-1][i].targetangle;
-      easyPoints[i].targetbez1 = easyPointsHistory[easyPointsHistory.length-1][i].targetbez1;
-      easyPoints[i].targetbez2 = easyPointsHistory[easyPointsHistory.length-1][i].targetbez2;
-      easyPoints[i].subMoves = easyPointsHistory[easyPointsHistory.length-1][i].subMoves;
-      easyPoints[i].processed = false;
-      if(easyPoints[i].x != easyPoints[i].targetx) {
-        easyPoints[i].step = 0
-      }
-    }
-    // easyPointsHistory.pop();
-    moveList.pop();
-    console.log(moveList.length)
-  }
-}
 
 
 function subdivideBezier(shape, idx1, t, p) {
@@ -1233,121 +1372,7 @@ function subdivideBezier(shape, idx1, t, p) {
 
   shape.splice(idx2s, 0, newVert);
 
-
-  // return [
-  //   { a: seg.a,   c1: ac1,  c2: ac2,  b: newLoc },
-  //   { a: newLoc,  c1: bc1,  c2: bc2,  b: seg.b }
-  // ];
 }
-
-
-
-
-
-
-
-
-
-
-function printGroups() {
-  for (let i=0;i<easyPoints.length;i++){
-    console.log(easyPoints[i].grp)
-  }
-}
-
-
-function moveRel2Center(which, dist, angleOffset) {
-  let dx = center.x - easyPoints[which].targetx;
-  let dy = center.y - easyPoints[which].targety;
-  
-  // Calculate the original angle to the center
-  let angle = Math.atan2(dy, dx);
-  angle = angle * (180/Math.PI) //convert to degrees
-  
-  angle += angleOffset;
-  angle = angle * (Math.PI/180) //convert back to radians
-  
-  easyPoints[which].targetx = easyPoints[which].targetx + dist * Math.cos(angle);
-  easyPoints[which].targety = easyPoints[which].targety + dist * Math.sin(angle);
-}
-
-function moveRel2Main(which, dist, angleOffset, p) {
-  let main
-  for (let i = 0;i<easyPoints.length;i++) {
-    if (easyPoints[which].grp == easyPoints[i].grp && easyPoints[i].isMain) {
-      main = easyPoints[i]
-    }
-  }
-  let moveAngle = p.radians(main.angle + angleOffset); // Convert degrees to radians and add offset
-
-  // Calculate new position
-  let newX = easyPoints[which].x + dist * Math.cos(moveAngle);
-  let newY = easyPoints[which].y + dist * Math.sin(moveAngle);
-
-  // Update the target position of the point
-  easyPoints[which].targetx = newX;
-  easyPoints[which].targety = newY;
-}
-
-
-
-function fullTangle(p) {
-  // numTangles = Math.min(Math.max(4, numSides - Math.floor(Math.random(3))), 4)
-  mode = "full"
-  // numTangles = 5
-  for (let i=0;i<numSides;i++) {
-    if (i<numSides/2-1 || i>numSides/2+1)
-    randSpots.all.push(i)
-  }
-  for (let i=0;i<numTangles;i++) {
-      let index = Math.floor(Math.random() * randSpots.all.length);
-      let value = randSpots.all.splice(index, 1)[0];
-      randSpots.rand.push(value);
-  }
-  randSpots.rand.sort((a, b) => a - b);
-
-  for(let i=0; i<numTangles; i++) {
-    randomMove(p)
-    console.log("history length", easyPointsHistory.length)
-  }
-  for(let i=0; i<easyPointsHistory.length; i++) {
-    console.log(i,", ",easyPointsHistory[i].length)
-  }
-}
-
-
-let nonRepeatingKeys = ["bigInnerLoop"];  // Add keys here that shouldn't repeat
-let weightedKeys = []; // List of keys with increased likelihood
-
-function randomMove(p) {
-  let keys = Object.keys(moves);
-  let randomKey;
-  let grpIndex
-  if (randSpots) {
-    grpIndex = randSpots.rand[tick]
-
-  } else {
-    grpIndex = tick
-  }
-  let prevGrpIndex = randSpots.rand[tick-1]
-  // if(tick>0){
-  if (easyPoints[getMain(groups[Math.abs(prevGrpIndex)])].subMoves.length>0 && Math.random()>.33){//if last mainpoint (or group) interacted with has submove options
-    subMove = p.random(easyPoints[getMain(groups[prevGrpIndex])].subMoves)
-    console.log("submove",subMove)
-    executeSubMove(subMove, p)//point (or group) and move(selected randomly from list))
-    lastMove = subMove;
-  } else {
-    if (nonRepeatingKeys.includes(moveList[moveList.length-1])) {
-      do randomKey = keys[Math.floor(Math.random() * keys.length)];
-      while (randomKey == moveList[moveList.length-1])
-    } else randomKey = keys[Math.floor(Math.random() * keys.length)];
-    console.log("move", randomKey)
-    executeMove(randomKey, p, grpIndex);
-    lastMove = randomKey;
-  }
-  // moveAllABit(p)
-}
-
 
 
 
@@ -1357,72 +1382,6 @@ function subdivideHistory(which, t, p){
   //   subdivideBezier(easyPointsHistory[i], which, t, p)
   // }
 }
-
-
-
-
-
-
-
-
-
-createButtonsForMoves = function(p) {
-  const container = document.getElementById('buttons-container');
-  // let index = 0
-  for (let key in moves) {
-    let button = document.createElement('button');
-    button.textContent = key; // Set button text as the function key
-    button.onclick = function() { executeMove(key, p, tick); }; // Set click handler
-    container.appendChild(button); // Append the button to the container
-    // index ++
-  }
-
-  container.appendChild(document.createElement('br'));
-  container.appendChild(document.createTextNode('sub-moves'));
-
-  for (let key in subMoves) {
-    let button = document.createElement('button');
-    button.textContent = key; // Set button text as the function key
-    button.onclick = function() { executeSubMove(key, p); }; // Set click handler
-    container.appendChild(button); // Append the button to the container
-    // index ++
-  }
-  container.appendChild(document.createElement('br'));
-  
-  let randomButton = document.createElement('button');
-  randomButton.textContent = "random (r)"; // Set button text as the function key
-  randomButton.onclick = function() { randomMove(p); }; // Set click handler
-  container.appendChild(randomButton); // Append the button to the container
-  // create undo button
-  let button = document.createElement('button');
-  button.textContent = "unravel (u)"; // Set button text as the function key
-  button.onclick = function() { undo(); }; // Set click handler
-  container.appendChild(button); // Append the button to the container
-
-  let fullTangleButton = document.createElement('button');
-  fullTangleButton.classList = "topMarginButton"
-  fullTangleButton.textContent = "generate unknot"; // Set button text as the function key
-  fullTangleButton.onclick = function() { fullTangle(p); }; // Set click handler
-  container.appendChild(fullTangleButton); // Append the button to the container
-}
-
-
-
-
-
-
-function moveAllABit(p) {
-  for (let i = 0; i<easyPoints.length; i++) {
-    if (p.random() >.25) {
-      easyPoints[i].targetx += p.random(-10, 10)
-      easyPoints[i].targety += p.random(-10, 10)
-      // easyPoints[i].targetangle += p.random(-10, 10)
-      // easyPoints[i].targetbez1 += p.random(-10, 10)
-      // easyPoints[i].targetbez2 += p.random(-10, 10)
-    }
-  }
-}
-
 
 
 

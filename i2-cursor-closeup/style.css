@@ -10,7 +10,7 @@ body {
 
 canvas {
   display: block;
-  /* cursor: none; */
+  cursor: none;
 }
 
 #buttons-container {
@@ -24,7 +24,7 @@ canvas {
   left: 20px;
   /* background: #fff; */
   z-index: 10;
-  justify-content: start;
+  justify-content: center;
 }
 
 .topMarginButton {

@@ -1,0 +1,41 @@
+
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Brocade Current</title>
+
+    <link rel="stylesheet" type="text/css" href="style.css">
+
+    <script src="https://cdn.jsdelivr.net/npm/p5@1.9.4/lib/p5.js"></script>
+    <!-- <script src="libraries/p5.sound.min.js"></script> -->
+  </head>
+
+  <body>
+
+    <div id="sketch-section">
+      <div id="sketch-holder">
+        <div id="svg-container">
+          <svg xmlns="http://www.w3.org/2000/svg" version="1.1">
+            <defs>
+              <filter id="svgfilter" color-interpolation-filters="sRGB" type="matrix" x="0%", y="0%" width="100%" and height="100%">
+                <!-- <feTurbulence type="turbulence" baseFrequency=".7" numOctaves="1" result="turbulence" /> -->
+                <feTurbulence type="turbulence" baseFrequency=".1" numOctaves="5" result="turbulence" />
+                <!-- <feDisplacementMap in2="turbulence" in="SourceGraphic" scale="5" xChannelSelector="R" yChannelSelector="G" /> -->
+                <feDisplacementMap in2="turbulence" in="SourceGraphic" scale="2" xChannelSelector="R" yChannelSelector="G" />
+              </filter>
+            </defs>
+          </svg>
+        </div>
+      </div>
+    </div>
+
+
+
+  </body>
+
+  <script src="sketch.js"></script>
+
+</html>

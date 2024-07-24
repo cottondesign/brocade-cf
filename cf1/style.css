@@ -17,22 +17,15 @@ canvas {
   display: flex;
   flex-direction: column;
   margin-right: 20px;
-  position: fixed;
-  width: 200px;
-  height: 95vh;
-  top: 20px;
-  left: 20px;
-  /* background: #fff; */
-  z-index: 10;
-  justify-content: start;
 }
 
 .topMarginButton {
   margin-top: 12px;
 }
 
-#sketch-holder, #sketch-holder-2, #sketch-holder-3 {
+#sketch-holder {
   position: fixed;
+
   height: 100vh;
   width: 100vw;
   display:flex;
@@ -40,21 +33,6 @@ canvas {
   justify-content: center;
 }
 
-#sketch-holder-2 {
-  z-index:-10;
-}
-
-#sketch-holder-3 {
-  z-index:-5;
-}
-
 #svg-container {
   display: none;
-}
-
-#btmSketch {
-  /* z-index:-10 */
-}
-#cursorSketch {
-  z-index: -5
 }

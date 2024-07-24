@@ -5,12 +5,16 @@ html, body {
 
 body {
  background-color: #171C31;
- color: #171C31
+ color: #171C31;
 }
 
 canvas {
   display: block;
   /* cursor: none; */
+}
+
+#sketch-section {
+  height: 250lvh;
 }
 
 #buttons-container {
@@ -31,13 +35,35 @@ canvas {
   margin-top: 12px;
 }
 
+.dummy {
+  font-size: 5vw;
+  color: white;
+}
+.dummyTop {
+  color: white;
+  font-size: 3vw;
+  width: 33%;
+}
+
+@media (max-width: 768px) {
+  .dummy {
+    font-size: 8vw;
+  }
+}
+
 #sketch-holder, #sketch-holder-2, #sketch-holder-3 {
-  position: fixed;
+  position: sticky;
+  top: 0px;
   height: 100vh;
   width: 100vw;
   display:flex;
   align-items: center;
   justify-content: center;
+}
+
+#sketch-holder {
+  margin-top: -200px;
+  /* z-index:-10; */
 }
 
 #sketch-holder-2 {
@@ -57,4 +83,28 @@ canvas {
 }
 #cursorSketch {
   z-index: -5
+}
+
+
+@media (max-aspect-ratio: 1/1) {
+  #defaultCanvas0 {
+    /* Your styles for portrait aspect ratio */
+		height: 100dvw;
+    width: auto;
+  }
+}
+
+@media (min-aspect-ratio: 1/1) {
+#defaultCanvas0 {
+  /* Your styles for landscape aspect ratio */
+  height: 100dvh;
+  width: auto;
+}
+}
+
+#button-container {
+  z-index: 1000;
+  position: fixed;
+  top: 20px;
+  left: 20px;
 }

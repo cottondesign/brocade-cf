@@ -1,3 +1,11 @@
+let logs = [];
+let frameRateLog = 0;
+let mouseXLog = 0;
+let mouseYLog = 0;
+let keyVariable = 0; // Replace with your key variable
+let lastUpdateTime;
+
+
 
 let easyPoints = [];
 let easyPointsHistory = [];
@@ -10,7 +18,6 @@ let randSpots = {
   all:[],
   rand:[]
 }
-
 let canvas
 let canvasDOM
 
@@ -19,8 +26,8 @@ let test2 = [0,0,0,0,0,0,0,0]
 let tickStart = 1
 let tick = tickStart
 let center
+let bgColor = "#171C31"
 let numSides = Math.floor(Math.random()*2)+7
-let strokeWeightt = 25
 
 
 let debugging = false
@@ -28,7 +35,7 @@ let vertexControls = debugging ? true : false;
 let speedLimit = debugging ? .3 : 0.05;
 let easingFactor = .2
 
-let bgColor = "#171C31"
+
 let strokeColor = "#F6F2E2"
 let moveList = []
 let colorthis = []
@@ -290,31 +297,54 @@ for(let i=5;i<culprit[0].length;i++) {
 
 
 
-// string = `<div id="svg-container">
-//         <svg xmlns="http://www.w3.org/2000/svg" version="1.1">
-//           <defs>
-//             <filter id="svgfilter" color-interpolation-filters="sRGB" type="matrix" x="0%", y="0%" width="100%" and height="100%">
-//               <!-- <feTurbulence type="turbulence" baseFrequency=".7" numOctaves="1" result="turbulence" /> -->
-//               <feTurbulence type="turbulence" baseFrequency=".1" numOctaves="5" result="turbulence" />
-//               <!-- <feDisplacementMap in2="turbulence" in="SourceGraphic" scale="5" xChannelSelector="R" yChannelSelector="G" /> -->
-//               <feDisplacementMap in2="turbulence" in="SourceGraphic" scale="2" xChannelSelector="R" yChannelSelector="G" />
-//             </filter>
-//           </defs>
-//         </svg>
-//       </div>`
+string = `<div id="svg-container">
+        <svg xmlns="http://www.w3.org/2000/svg" version="1.1">
+          <defs>
+            <filter id="svgfilter" color-interpolation-filters="sRGB" type="matrix" x="0%", y="0%" width="100%" and height="100%">
+              <!-- <feTurbulence type="turbulence" baseFrequency=".7" numOctaves="1" result="turbulence" /> -->
+              <feTurbulence type="turbulence" baseFrequency=".1" numOctaves="5" result="turbulence" />
+              <!-- <feDisplacementMap in2="turbulence" in="SourceGraphic" scale="5" xChannelSelector="R" yChannelSelector="G" /> -->
+              <feDisplacementMap in2="turbulence" in="SourceGraphic" scale="2" xChannelSelector="R" yChannelSelector="G" />
+            </filter>
+          </defs>
+        </svg>
+      </div>`
 
-// // append string to div with id sketch-holder
-// document.getElementById("sketch-holder").innerHTML += string;
-// document.getElementById("svg-container").style.position = "absolute";
-
-
+// append string to div with id sketch-holder
+document.getElementById("sketch-holder").innerHTML += string;
+document.getElementById("svg-container").style.position = "absolute";
 
 
 
-let hardUnknot = function(p) {
+
+
+let mainSketch = function(p) {
 
 
   p.setup = function() {
+    // Override the default console.log function
+    lastUpdateTime = Date.now();
+    const originalConsoleLog = console.log;
+    console.log = function(message) {
+      logs.push(message);
+      if (logs.length > 20) { // Keep only the last 20 logs
+        logs.shift();
+      }
+      originalConsoleLog.apply(console, arguments);
+      updateLogElement();
+    };
+
+    // Example of capturing errors
+    window.onerror = function(message, source, lineno, colno, error) {
+      let errorMsg = "Error: " + message + " at line: " + lineno + ":" + colno;
+      logs.push(errorMsg);
+      if (logs.length > 20) { // Keep only the last 20 logs
+        logs.shift();
+      }
+      // Ensure the error is also logged to the console
+      originalConsoleLog(errorMsg);
+      updateLogElement();
+    };
     // vertexControlsButton = p.createButton('show/hide debug info');
     // vertexControlsButton.elt.style.position = "fixed";
     // vertexControlsButton.elt.style.top = "50lvh"
@@ -343,12 +373,12 @@ let hardUnknot = function(p) {
     canvas = p.createCanvas(canvasSize, canvasSize)
     canvas.elt.style.width = ''; // Remove the inline width style
     canvas.elt.style.height = ''; // Remove the inline height style
-    // canvas.elt.style.cursor = "none"
+    canvas.elt.style.cursor = "none"
     canvas.style("-webkit-filter", `url("#svgfilter")`).style("filter", `url("#svgfilter")`);
-    // canvas.style('z-index', '50');
+    canvas.style('z-index', '50');
     // canvas.style('position', 'absolute');
     canvas.parent('sketch-holder');
-    canvas.mouseClicked(checkDifficulty)
+    canvas.mouseClicked(newSketch)
     center = {x:p.width/2, y:p.height/2}
     p.width *= widthChg
     p.height *= heightChg
@@ -994,6 +1024,7 @@ let hardUnknot = function(p) {
   let sketchHeight = (sketchSection.offsetHeight * 0.85) - window.innerHeight;
 
   p.draw = function() {
+    lastUpdateTime = Date.now();
 
     if(p.mouseX != 0) {
       mouseXglobal = p.mouseX
@@ -1077,9 +1108,7 @@ let hardUnknot = function(p) {
     }
     
 
-    // p.clear()
-    p.background(bgColor)
-
+    p.clear()
     p.noFill()
 
     // p.fill(255)
@@ -1199,19 +1228,44 @@ let hardUnknot = function(p) {
 
     }
     alpha = p.max(0, 1-opacity)
+    // p.background(23, 28, 49, alpha*255)
     opacity += .15
     opacity = p.min(1, opacity)
 
+
+    frameRateLog = p.frameRate().toFixed(2);
+    frameCountLog = p.frameCount;
+    mouseXLog = p.mouseX;
+    mouseYLog = p.mouseY;
+  
+    // Log values
+  
+  
+    // // Display logs on canvas
+    // p.textSize(12);
+    // p.fill(255);
+    // for (let i = 0; i < logs.length; i++) {
+    //   p.text(logs[i], 30, 20 + i * 15);
+    // }
+
+    // nonExistentFunction(); // This will trigger a ReferenceError
+
   }
+
+
+
 
 }
 
 
 
-let sketch = new p5(hardUnknot, 'canvasContainer1');
+let sketch = new p5(mainSketch, 'canvasContainer1');
 
 
-
+function isRunning() {
+  // If the time since the last update is greater than a threshold, consider the sketch as crashed
+  return (Date.now() - lastUpdateTime) < 100; // time threshold
+};
 
 
 function easeInOut(t) {
@@ -1235,11 +1289,11 @@ function drawSegments(p, start, end) {
       if (easyPoints[j].zIndex == i) {
         p.strokeCap(p.SQUARE)
         p.stroke(strokeColor)
-        p.strokeWeight(strokeWeightt)
+        p.strokeWeight(canvasSize/140 + 6)
         drawSegment(j, p)
         p.stroke(bgColor)
         // stroke(colors[easyPoints[j].grp])
-        p.strokeWeight(strokeWeightt*.56)
+        p.strokeWeight(canvasSize/280 + 3)
         drawSegment(j, p)
       }
       if (i == Math.floor(easyPoints.length/3) && !isTouchDevice() && mouseXglobal != undefined && !cursorOverElementsVar) {
@@ -1249,18 +1303,17 @@ function drawSegments(p, start, end) {
         let unscaledMouseX = mouseXglobal / widthChg;
         let unscaledMouseY = mouseYglobal / heightChg + scrollAccumulate;
         // console.log("scrollAccumulate",scrollAccumulate)
-        // p.image(cursor, unscaledMouseX, unscaledMouseY, 18,20)
+        p.image(cursor, unscaledMouseX, unscaledMouseY, 18,20)
         prevMouseY = p.mouseY
       }
     }
   }
 }
 
-function newSketch(whichUnknot) {
-  window.scrollTo(0, 0);
+function newSketch() {
   sketch.remove();
   progress = targetProgress
-  sketch = new p5(whichUnknot, 'canvasContainer1');
+  sketch = new p5(mainSketch, 'canvasContainer1');
 }
 
 // (function() {
@@ -1353,66 +1406,43 @@ document.addEventListener("mousemove", (event) => {
 });
 
 
-function updateStrokeWeight(event) {
-  strokeWeightt = event.target.value;
-  console.log("strokeWeightt:", strokeWeightt);
+
+
+window.onerror = function(message, source, lineno, colno, error) {
+  console.log("Error: " + message + " at line: " + lineno + ":" + colno);
+};
+
+
+
+
+function updateLogElement() {
+  // let logElement = document.getElementById('log');
+  // if (!logElement) {
+  //   logElement = document.createElement('p');
+  //   logElement.id = 'log';
+  //   logElement.style.position = "fixed"
+  //   logElement.style.top = "20px"
+  //   logElement.style.left = "20px"
+  //   logElement.style.color = "white"
+  //   logElement.style.background = "black"
+  //   document.body.appendChild(logElement);
+  // }
+  // logElement.innerHTML = logs.join('<br>');
 }
 
-document.getElementById("slider1").addEventListener("input", updateStrokeWeight);
+// Example log statements
+// setInterval(() => {
+//   console.log("Log message at " + new Date().toLocaleTimeString());
+// }, 1000);
 
-function invertColors() {
-  let holder = bgColor
-  bgColor = strokeColor
-  strokeColor = holder
-  document.body.style.background = bgColor;
-}
 
-document.getElementById('download').addEventListener('click', function() {
-  sketch.saveCanvas('myCanvas', 'png');
-});
-
-function checkDifficulty() {
-  const difficulty = document.querySelector('input[name="difficulty"]:checked').value;
-  if (difficulty == "easy") {
-    newSketch(easyUnknot);
-  } else if (difficulty == "hard") {
-    newSketch(hardUnknot);
-  } else if (difficulty == "scratch") {
-    newSketch(scratch);
+function checkAndRestartSketch() {
+  // Check if the draw loop is running
+  if (!isRunning()) {
+    // Call your function to restart the sketch
+    newSketch();
+    console.log("CAUGHT CRASH")
   }
 }
 
-document.getElementById('generate').addEventListener('click', function() {
-  checkDifficulty();
-});
-
-document.getElementById('sketch-holder').style.width = `calc(100vw - ${document.getElementById('controls-bar').offsetWidth}px)`;
-
-
-document.getElementById('mode-radio').addEventListener('change', function(event) {
-  if (event.target.name === 'difficulty') {
-      handleRadioChange(event.target.value);
-  }
-});
-
-function handleRadioChange(value) {
-  console.log('Selected option:', value);
-  if (value == "easy") {
-    setTimeout(() => {
-      document.getElementById('easyUnknotControls').innerHTML = ""
-    }, 500);
-    newSketch(easyUnknot);
-    document.getElementById('easyUnknotControls').style.height = "0px"
-  } else if (value == "hard") {
-    setTimeout(() => {
-      document.getElementById('easyUnknotControls').innerHTML = ""
-    }, 500);
-    newSketch(hardUnknot);
-    document.getElementById('easyUnknotControls').style.height = "0px"
-  } else if (value == "scratch") {
-
-    newSketch(scratch);
-    document.getElementById('easyUnknotControls').style.height = "300px"
-  }
-}
-
+setInterval(checkAndRestartSketch, 200);
