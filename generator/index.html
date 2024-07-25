@@ -5,7 +5,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <title>Brocade Current</title>
+    <title>Unknot Generator</title>
 
     <link rel="stylesheet" type="text/css" href="style.css">
 
@@ -38,7 +38,7 @@
             <input type="radio" name="difficulty" value="easy" class="radio-input">
             <span class="radio-custom"></span>
             Easy
-        </label>
+          </label>
           <label class="radio-label">
               <input type="radio" name="difficulty" value="hard" class="radio-input" checked>
               <span class="radio-custom"></span>
@@ -46,15 +46,18 @@
           </label>
         </div>
         <div class="horiz-rule"></div>
+
+        <div class="slider-container">
+          Stroke Weight
+          <input type="range" class="slider" id="slider1" min="10" max="25">
+        </div>
+
         <label class="checkbox-label">
           <input type="checkbox" class="checkbox-input" onclick="invertColors()">
           <span class="checkbox-custom"></span>
           Invert Colors
         </label>
-        <div class="slider-container">
-          <input type="range" class="slider" id="slider1" min="10" max="25">
-          Stroke Weight
-        </div>
+  
         <div id="easyUnknotControls"></div>
       </div>
 

@@ -184,7 +184,7 @@ canvas {
 
 .slider-container {
   /* margin-bottom: 20px; */
-  margin-top: 6px;
+  /* margin-top: 6px; */
 }
 
 .slider {
@@ -195,7 +195,7 @@ canvas {
   background: transparent;
   outline: none;
   margin: 0;
-  margin-top: 6px;
+  margin-top: 9px;
   margin-bottom: 8px;
 }
 

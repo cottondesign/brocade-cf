@@ -20,7 +20,7 @@ let tickStart = 1
 let tick = tickStart
 let center
 let numSides = Math.floor(Math.random()*2)+7
-let strokeWeightt = 25
+let strokeWeightt = 15
 
 
 let debugging = false
